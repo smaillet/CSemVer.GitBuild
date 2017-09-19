@@ -1,8 +1,8 @@
 version: 1.0.{build}
 
 nuget:
-  account_feed: true
-  project_feed: true
+  account_feed: false
+  project_feed: false
   disable_publish_on_pr: true
 
 branches:
