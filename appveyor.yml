@@ -1,22 +1,22 @@
 version: 1.0.{build}
 
+nuget:
+  account_feed: true
+  project_feed: true
+  disable_publish_on_pr: true
+
 branches:
   only:
   - master
 
 image: Visual Studio 2017
 
-nuget:
-  account_feed: true
-  project_feed: true
-  disable_publish_on_pr: true
-
 before_build:
-  - cmd: msbuild /t:Restore src/CSemVer.GitBuild.csproj
+  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.csproj
 
 build:
   project: src\CSemVer.GitBuild.sln
   verbosity: minimal
 
 artifacts:
-  - path: BuildOutput/NuGet/*.nupkg
+  - path: BuildOutput\NuGet\*.nupkg
