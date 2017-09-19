@@ -1,0 +1,96 @@
+﻿<Project>
+    <UsingTask TaskName="GetRepositoryVersionInfo" AssemblyFile="$(LlvmNETBuildTasksAssembly)" />
+
+    <Target Name="PrepareVersioningForBuild"
+            BeforeTargets="PrepareForBuild;Restore;_IntermediatePack"
+            DependsOnTargets="GetRepositoryInfo;VerifyProvidedBuildVersion;SetVersionDependentProperties;"
+            />
+
+    <Target Name="MultiTargetBuild" DependsOnTargets="PrepareVersioningForBuild;NativeMultiTargetBuild" />
+
+    <Target Name="GetRepositoryInfo">
+        <GetRepositoryVersionInfo BuildVersionXmlFile="$(BuildVersionXmlFile)"
+                                    IsAutomatedBuild="$(IsAutomatedBuild)"
+                                    IsPullRequestBuild="$(IsPullRequestBuild)"
+                                    >
+            <Output TaskParameter="SemVer" PropertyName="_FullBuildNumber" />
+            <Output TaskParameter="NuGetVersion" PropertyName="_PackageVersion" />
+            <Output TaskParameter="FileVersionMajor" PropertyName="_FileVersionMajor" />
+            <Output TaskParameter="FileVersionMinor" PropertyName="_FileVersionMinor" />
+            <Output TaskParameter="FileVersionBuild" PropertyName="_FileVersionBuild" />
+            <Output TaskParameter="FileVersionRevision" PropertyName="_FileVersionRevision" />
+            <Output TaskParameter="ExtraProperties" ItemName="_ExtraProperties" />
+        </GetRepositoryVersionInfo>
+        <!-- If FullBuildNumber not provided then use all of the generated version numbers/parts -->
+        <PropertyGroup Condition="'$(FullBuildNumber)'==''">
+            <FullBuildNumber>$(_FullBuildNumber)</FullBuildNumber>
+            <PackageVersion>$(_PackageVersion)</PackageVersion>
+            <FileVersionMajor>$(_FileVersionMajor)</FileVersionMajor>
+            <FileVersionMinor>$(_FileVersionMinor)</FileVersionMinor>
+            <FileVersionBuild>$(_FileVersionBuild)</FileVersionBuild>
+            <FileVersionRevision>$(_FileVersionRevision)</FileVersionRevision>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="SetVersionDependentProperties">
+        <PropertyGroup>
+            <FileVersion Condition="'$(FileVersion)'==''">$(FileVersionMajor).$(FileVersionMinor).$(FileVersionBuild).$(FileVersionRevision)</FileVersion>
+            <AssemblyVersion>$(FileVersion)</AssemblyVersion>
+            <InformationalVersion>$(FullBuildNumber)</InformationalVersion>
+        </PropertyGroup>
+    </Target>
+
+    <Target Name="VerifyProvidedBuildVersion" Condition="'$(FullBuildNumber)'!=''" >
+        <Error Condition="'$(FileVersionMajor)'==''" Text="FileVersionMajor property not found"/>
+        <Error Condition="'$(FileVersionMinor)'==''" Text="FileVersionMinor property not found"/>
+        <Error Condition="'$(FileVersionRevision)'==''" Text="FileVersionRevision property not found"/>
+        <Error Condition="'$(PackageVersion)'==''" Text="PackageVersion property not found"/>
+    </Target>
+
+    <!-- Generates include header for native code Win32 Resource (.RC) -->
+    <Target Name="GenerateVesionInfoHeader"
+            Condition="'$(MSBuildProjectExtension)'=='.vcxproj'"
+            BeforeTargets="ResourceCompile"
+            >
+        <ItemGroup>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MAJOR $(FileVersionMajor)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MINOR $(FileVersionMinor)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_BUILD $(FileVersionBuild)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_REVISION $(FileVersionRevision)'/>
+            <VersionInfoGeneratedLine Include='#define FILE_VERSION_STRING "$(FileVersion)"'/>
+            <VersionInfoGeneratedLine Include=' '/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MAJOR $(FileVersionMajor)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MINOR $(FileVersionMinor)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_BUILD $(FileVersionBuild)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_REVISION $(FileVersionRevision)'/>
+            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_STRING "$(FileVersion)"'/>
+        </ItemGroup>
+        <Message Importance="high" Text="Generating $(GeneratedVersionInfoHeader)" />
+        <WriteLinesToFile File="$(IntermediateOutputPath)$(GeneratedVersionInfoHeader)" Overwrite="true" Lines="@(VersionInfoGeneratedLine)" />
+    </Target>
+
+    <!-- Generate a C# source file with Assembly and file version attributes and include it in the compilation -->
+    <!-- For legacy projects only, this functionality is built into the new CPS based CSproj files -->
+    <Target Name="GenerateAssemblyVersionInfoCS"
+            Condition="'$(MSBuildProjectExtension)'=='.csproj' AND '$(GenerateAssemblyInfo)'==''"
+            BeforeTargets="CoreCompile"
+            >
+        <ItemGroup>
+            <AssemblyVersionInfoGeneratedLine Include="using System.Reflection%3B"/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyVersion("$(FileVersionMajor).$(FileVersionMinor).$(FileVersionBuild).$(FileVersionRevision)")]'/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyFileVersion("$(FileVersionMajor).$(FileVersionMinor).$(FileVersionBuild).$(FileVersionRevision)")]'/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyInformationalVersion("$(FullBuildNumber)")]'/>
+        </ItemGroup>
+        <Message Importance="high" Text="Generating: $(IntermediateOutputPath)AssemblyVersionInfo.cs" />
+        <WriteLinesToFile File="$(IntermediateOutputPath)AssemblyVersionInfo.cs" Overwrite="true" Lines="@(AssemblyVersionInfoGeneratedLine)" />
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)AssemblyVersionInfo.cs"/>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="ShowBuildParams" BeforeTargets="Build;Pack">
+        <Message Importance="normal" Text="FullBuildNumber: $(FullBuildNumber)"/>
+        <Message Importance="normal" Text=" PackageVersion: $(PackageVersion)"/>
+        <Message Importance="normal" Text="    FileVersion: $(FileVersion)"/>
+    </Target>
+</Project>

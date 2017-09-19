@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+    <PackageId>CSemVer.GitBuild</PackageId>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Company>Ubiquity.NET</Company>
+    <Product>UBiquity.NET Build Support</Product>
+    <Description>Provides standardized Constrained Semantic version numbers for builds including Local builds, Pull Request/Buddy Builds, CI builds and, of course official release builds</Description>
+    <PackageProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Build, Versioning, SemVer, CSemVer, CI Build</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+      <!-- pack the build support files -->
+      <Content Include="build\$(PackageId).props" PackagePath="build\" />
+      <Content Include="build\$(PackageId).targets" PackagePath="build\" />
+      <Content Include="buildMultiTargeting\$(PackageId).props" PackagePath="buildMultiTargeting\" />
+      <Content Include="buildMultiTargeting\$(PackageId).targets" PackagePath="buildMultiTargeting\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="BuildVersionData.cs" />
+    <Compile Include="GetRepositoryVersionInfo.cs" />
+    <Compile Include="Versioning\CIPreReleaseVersion.cs" />
+    <Compile Include="Versioning\CSemVer.cs" />
+    <Compile Include="Versioning\CSemVerCI.cs" />
+    <Compile Include="Versioning\IPrereleaseVersion.cs" />
+    <Compile Include="Versioning\OfficialPreRelease.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="all" />
+      <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+      <PackageReference Include="Ubiquity.ArgValidators" Version="0.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="buildMultiTargeting" />
+    <Folder Include="build" />
+  </ItemGroup>
+</Project>
