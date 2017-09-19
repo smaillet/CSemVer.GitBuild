@@ -47,10 +47,13 @@ namespace CSemVer.GitBuild
     /// <summary>Version data for a build</summary>
     public class BuildVersionData
     {
+        /// <summary>Major portion of the build</summary>
         public UInt16 BuildMajor { get; private set; }
 
+        /// <summary>Minor portion of the build</summary>
         public UInt16 BuildMinor { get; private set; }
 
+        /// <summary>Patch portion of the build</summary>
         public UInt16 BuildPatch { get; private set; }
 
         public string PreReleaseName { get; private set; }
