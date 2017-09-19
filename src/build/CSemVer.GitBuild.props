@@ -1,7 +1,7 @@
 ﻿<Project TreatAsLocalProperty="_TaskFolder">
     <PropertyGroup>
-        <_TaskFolder Condition="'$(MSBuildRunTimeType)'=='Core'">netstandard2.0</_TaskFolder>
-        <_TaskFolder Condition="'$(MSBuildRunTimeType)'!='Core'">net47</_TaskFolder>
-        <CSemVerGitBuildTasksAssembly>$([MSBuild]::NormalizePath("$(MSBuildThisFileDirectory)", "..", "tasks", "$(_TaskFolder)", "Llvm.NET.BuildTasks.dll"))</CSemVerGitBuildTasksAssembly>
+        <_TaskFolder Condition="'$(MSBuildRunTimeType)'=='Core'">netstandard1.3</_TaskFolder>
+        <_TaskFolder Condition="'$(MSBuildRunTimeType)'!='Core'">net46</_TaskFolder>
+        <CSemVerGitBuildTasksAssembly>$([MSBuild]::NormalizePath("$(MSBuildThisFileDirectory)", "..", "tasks", "$(_TaskFolder)", "CSemVer.GitBuild.dll"))</CSemVerGitBuildTasksAssembly>
     </PropertyGroup>
 </Project>

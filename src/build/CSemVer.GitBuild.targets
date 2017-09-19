@@ -1,5 +1,5 @@
 ﻿<Project>
-    <UsingTask TaskName="GetRepositoryVersionInfo" AssemblyFile="$(LlvmNETBuildTasksAssembly)" />
+    <UsingTask TaskName="GetRepositoryVersionInfo" AssemblyFile="$(CSemVerGitBuildTasksAssembly)" />
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;Restore;_IntermediatePack"
