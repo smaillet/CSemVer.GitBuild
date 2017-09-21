@@ -1,5 +1,7 @@
 version: 1.0.{build}
 
+configuration: Release
+
 nuget:
   account_feed: false
   project_feed: false
@@ -18,7 +20,7 @@ before_build:
   - cmd: msbuild /t:Restore src\CSemVer.GitBuild.csproj
 
 build:
-  project: src\CSemVer.GitBuild.sln
+  project: src\CSemVer.GitBuild.csproj
   verbosity: minimal
 
 artifacts:
