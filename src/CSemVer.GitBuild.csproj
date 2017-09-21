@@ -5,19 +5,11 @@
     <DevelopmentDependency>true</DevelopmentDependency>
     <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
-    <PackageId>CSemVer.GitBuild</PackageId>
-    <PackageVersion>0.2.1</PackageVersion>
-    <Company>Ubiquity.NET</Company>
-    <Product>UBiquity.NET Build Support</Product>
-    <Description>Provides standardized Constrained Semantic version numbers for builds including Local builds, Pull Request/Buddy Builds, CI builds and, of course official release builds</Description>
-    <PackageProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageTags>Build, Versioning, SemVer, CSemVer, CI Build</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
+    <PackageVersion>0.3.1</PackageVersion>
+    <NuspecFile>CSemVer.GitBuild.nuspec</NuspecFile>
+    <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion)</NuspecProperties>
   </PropertyGroup>
+
   <ItemGroup>
       <!-- pack the build support files -->
       <Content Include="build\$(PackageId).props" PackagePath="build\" />
@@ -37,12 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="all" CopyLocal="true" />
-      <PackageReference Include="System.ValueTuple" Version="4.4.0" CopyLocal="true" />
-      <PackageReference Include="Ubiquity.ArgValidators" Version="[0.1.1]" PrivateAssets="all" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="buildMultiTargeting" />
     <Folder Include="build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="all" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" PrivateAssets="all" />
+    <PackageReference Include="Ubiquity.ArgValidators" Version="[0.1.1]" PrivateAssets="all" CopyLocal="true" />
+    <PackageReference Update="SourceLink.Create.CommandLine" Version="2.2.1" />
   </ItemGroup>
 </Project>

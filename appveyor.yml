@@ -11,6 +11,9 @@ branches:
 
 image: Visual Studio 2017
 
+init:
+  - git config --global core.autocrlf input
+
 before_build:
   - cmd: msbuild /t:Restore src\CSemVer.GitBuild.csproj
 

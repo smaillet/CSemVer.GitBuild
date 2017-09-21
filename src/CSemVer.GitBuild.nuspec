@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CSemVer.GitBuild</id>
+    <authors>CSemVer.GitBuild</authors>
+    <owners>Ubiquity.NET</owners>
+    <version>$PackageVersion$</version>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <developmentDependency>true</developmentDependency>
+    <licenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</projectUrl>
+    <description>Provides standardized Constrained Semantic version numbers for builds including Local builds, Pull Request/Buddy Builds, CI builds and, of course official release builds</description>
+    <tags>Build, Versioning, SemVer, CSemVer, CI Build</tags>
+    <repository type="Git" url="https://github.com/UbiquityDotNET/CSemVer.GitBuild" />
+  </metadata>
+  <files>
+    <file src="$reporoot$BuildOutput\bin\CSemVer.GitBuild\Release\**\*.*" target="tasks" exclude="**\*.json"/>
+    <file src="$reporoot$src\build\CSemVer.GitBuild.props" target="build\CSemVer.GitBuild.props" />
+    <file src="$reporoot$src\build\CSemVer.GitBuild.targets" target="build\CSemVer.GitBuild.targets" />
+    <file src="$reporoot$src\buildMultiTargeting\CSemVer.GitBuild.props" target="buildMultiTargeting\CSemVer.GitBuild.props" />
+    <file src="$reporoot$src\buildMultiTargeting\CSemVer.GitBuild.targets" target="buildMultiTargeting\CSemVer.GitBuild.targets" />
+  </files>
+</package>

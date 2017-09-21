@@ -10,9 +10,10 @@
 
     <Target Name="GetRepositoryInfo">
         <GetRepositoryVersionInfo BuildVersionXmlFile="$(BuildVersionXmlFile)"
-                                    IsAutomatedBuild="$(IsAutomatedBuild)"
-                                    IsPullRequestBuild="$(IsPullRequestBuild)"
-                                    >
+                                  IsAutomatedBuild="$(IsAutomatedBuild)"
+                                  IsPullRequestBuild="$(IsPullRequestBuild)"
+                                  IsCIBuild="$(IsCIBuild)"
+                                  >
             <Output TaskParameter="SemVer" PropertyName="_FullBuildNumber" />
             <Output TaskParameter="NuGetVersion" PropertyName="_PackageVersion" />
             <Output TaskParameter="FileVersionMajor" PropertyName="_FileVersionMajor" />

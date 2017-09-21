@@ -58,7 +58,11 @@
                 <EnableDefaultItems>false</EnableDefaultItems>
                 <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
                 <Determenistic>true</Determenistic>
+                <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
             </PropertyGroup>
+            <ItemGroup Condition="'$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
+                <PackageReference Include="SourceLink.Create.CommandLine" Version="2.1.0" PrivateAssets="All" />
+            </ItemGroup>
             <ItemGroup>
                 <PackageReference Include="Microsoft.AnalyzerPowerPack" Version="1.1.0" PrivateAssets="All" />
                 <PackageReference Include="RefactoringEssentials" Version="5.2.0" PrivateAssets="All" />
