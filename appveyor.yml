@@ -17,10 +17,10 @@ init:
   - git config --global core.autocrlf input
 
 before_build:
-  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.csproj
+  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln
 
 build:
-  project: src\CSemVer.GitBuild.csproj
+  project: src\CSemVer.GitBuild.sln
   verbosity: minimal
 
 artifacts:
