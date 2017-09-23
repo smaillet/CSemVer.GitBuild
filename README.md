@@ -2,7 +2,7 @@
 Automated Constrained Semantic Versioning for Git repos
 
 ## Build Status
-[![Build status](https://ci.appveyor.com/api/projects/status/5utx29w16mat63sm/branch/master?svg=true)](https://ci.appveyor.com/project/UbiquityDotNet/csemver-gitbuild/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/nfixkakus282t06u?svg=true)](https://ci.appveyor.com/project/UbiquityDotNet/csemver-gitbuild)
 
 
 ## Overview
@@ -26,6 +26,7 @@ components of the version match. This ensure that what you are building includes
 you just built instead of the last one released publicly.
 
 The following is a list of the version formats in descending order of precedence:
+
 | Build Type | Format |
 |------------|--------|
 | Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}{double dash}ci-DEV-{UTCTIME of build in hex} |
