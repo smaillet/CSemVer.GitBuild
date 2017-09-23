@@ -6,6 +6,7 @@
     <PackageVersion>0.6.0</PackageVersion>
     <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>
     <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion);configuration=$(Configuration)</NuspecProperties>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="GetBuildIndexFromTime.cs" />
@@ -13,10 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.props"/>
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.targets"/>
-    <Content Include="build\CSemVer.GitBuild.props"/>
-    <Content Include="build\CSemVer.GitBuild.targets"/>
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.props" />
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.targets" />
+    <Content Include="build\CSemVer.GitBuild.props" />
+    <Content Include="build\CSemVer.GitBuild.targets" />
   </ItemGroup>
 
   <ItemGroup>
