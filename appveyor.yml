@@ -11,14 +11,6 @@ branches:
   only:
   - master
 
-skip_commits:
-  files:
-    - docs/*
-
-skip_commits:
-  files:
-    - *.md
-
 image: Visual Studio 2017
 
 init:
