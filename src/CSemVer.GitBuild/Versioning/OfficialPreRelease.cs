@@ -20,7 +20,7 @@ namespace CSemVer.GitBuild
             preRelNumber.ValidateRange( 0, 99, nameof( preRelNumber ) );
             preRelFix.ValidateRange( 0, 99, nameof( preRelFix ) );
 
-            Version = (NameIndex: preRelNameIndex, Number: (byte)preRelNumber, Fix: (byte)preRelFix);
+            Version = (NameIndex: preRelNameIndex, Number: ( byte )preRelNumber, Fix: ( byte )preRelFix);
         }
 
         public int PreReleaseIndex { get; }

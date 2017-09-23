@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -14,18 +12,19 @@ namespace CSemVer.GitBuild
         public string BuildVersionXmlFile { get; set; }
 
         [Required]
-        public bool IsAutomatedBuild { get; set; }
+        public bool IsReleaseBuild { get; set; }
 
         [Required]
         public bool IsPullRequestBuild { get; set; }
 
         [Required]
-        public bool IsCIBuild { get; set; }
+        public bool IsAutomatedBuild { get; set; }
 
-        [CanBeNull]
-        public string  BuildMeta { get; set; }
+        [Required]
+        public string BuildMeta { get; set; }
 
-        public DateTime BuildTimeStamp { get; set; } = DateTime.UtcNow;
+        [Required]
+        public string BuildIndex { get; set; }
 
         [Output]
         public string SemVer { get; set; }
@@ -46,29 +45,29 @@ namespace CSemVer.GitBuild
         public ushort FileVersionRevision { get; set; }
 
         [Output]
-        public ITaskItem[] ExtraProperties { get; set; }
+        public ITaskItem[ ] ExtraProperties { get; set; }
 
         public override bool Execute( )
         {
             var buildMode = BuildMode.LocalDev;
-            if(IsAutomatedBuild)
+            if( IsAutomatedBuild )
             {
-                if(IsPullRequestBuild)
+                if( IsPullRequestBuild )
                 {
                     buildMode = BuildMode.PullRequest;
                 }
-                else if(IsCIBuild)
+                else if( IsReleaseBuild )
                 {
-                    buildMode = BuildMode.ContinuousIntegration;
+                    buildMode = BuildMode.OfficialRelease;
                 }
                 else
                 {
-                    buildMode = BuildMode.OfficialRelease;
+                    buildMode = BuildMode.ContinuousIntegration;
                 }
             }
 
             var baseBuildVersionData = BuildVersionData.Load( BuildVersionXmlFile );
-            CSemVer fullVersion = baseBuildVersionData.CreateSemVer( buildMode, BuildTimeStamp, BuildMeta );
+            CSemVer fullVersion = baseBuildVersionData.CreateSemVer( buildMode, BuildIndex, BuildMeta );
 
             SemVer = fullVersion.ToString( true );
             NuGetVersion = fullVersion.ToString( false );

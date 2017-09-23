@@ -69,25 +69,28 @@ namespace CSemVer.GitBuild
         [CanBeNull]
         public string BuildVersionXmlFile { get; private set; }
 
-        public CSemVer CreateSemVer( BuildMode buildMode, DateTime timeStamp, [CanBeNull] string buildmeta = null )
+        public CSemVer CreateSemVer( BuildMode buildMode, string buildIndex, [CanBeNull] string buildmeta = null )
         {
+            buildMode.ValidateDefined( nameof( buildMode ) );
+            buildIndex.ValidateNotNullOrWhiteSpace( nameof( buildIndex ) );
+
             IPrereleaseVersion preReleaseInfo = null;
             switch( buildMode )
             {
             case BuildMode.LocalDev:
                 // local dev builds are always newer than any other builds
-                preReleaseInfo = new CIPreReleaseVersion( "DEV", GetBuildIndexFromUtc( timeStamp.ToUniversalTime() ) );
+                preReleaseInfo = new CIPreReleaseVersion( "DEV", buildIndex );
                 break;
 
             case BuildMode.PullRequest:
                 // PR builds should have a higher precedence than CI or release so that the
                 // builds pull in the components built in previous stages of the current build
                 // instead of the official CI or released builds.
-                preReleaseInfo = new CIPreReleaseVersion( "PRQ", GetBuildIndexFromUtc( timeStamp.ToUniversalTime( ) ) );
+                preReleaseInfo = new CIPreReleaseVersion( "PRQ", buildIndex );
                 break;
 
             case BuildMode.ContinuousIntegration:
-                preReleaseInfo = new CIPreReleaseVersion( "REL", GetBuildIndexFromUtc(timeStamp.ToUniversalTime() ) );
+                preReleaseInfo = new CIPreReleaseVersion( "REL", buildIndex );
                 break;
 
             case BuildMode.OfficialRelease:
@@ -117,7 +120,7 @@ namespace CSemVer.GitBuild
 
                 retVal.BuildVersionXmlFile = path;
 
-                foreach( var attrib in data.Attributes() )
+                foreach( var attrib in data.Attributes( ) )
                 {
                     switch( attrib.Name.LocalName )
                     {
@@ -169,18 +172,6 @@ namespace CSemVer.GitBuild
             }
 
             return retVal;
-        }
-
-        // For details on the general algorithm used for computing the numbers here see:
-        // https://msdn.microsoft.com/en-us/library/system.reflection.assemblyversionattribute.assemblyversionattribute(v=vs.140).aspx
-        // Only difference is this uses UTC as the basis to ensure the numbers consistently increase independent of locale.
-        private static string GetBuildIndexFromUtc( DateTime timeStamp )
-        {
-            var midnightTodayUtc = new DateTime( timeStamp.Year, timeStamp.Month, timeStamp.Day, 0, 0, 0, DateTimeKind.Utc );
-            var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
-            uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
-            buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
-            return buildNumber.ToString( "X08" );
         }
 
         private Dictionary<string,string> ExtraPropertyMap = new Dictionary<string, string>();

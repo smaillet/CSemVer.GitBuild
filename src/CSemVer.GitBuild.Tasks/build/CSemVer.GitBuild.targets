@@ -1,18 +1,27 @@
 ﻿<Project>
     <UsingTask TaskName="GetRepositoryVersionInfo" AssemblyFile="$(CSemVerGitBuildTasksAssembly)" />
+    <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(CSemVerGitBuildTasksAssembly)" />
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;Restore;_IntermediatePack"
             DependsOnTargets="GetRepositoryInfo;VerifyProvidedBuildVersion;SetVersionDependentProperties;"
             />
 
-    <Target Name="MultiTargetBuild" DependsOnTargets="PrepareVersioningForBuild;NativeMultiTargetBuild" />
+    <Target Name="_EnsureBuildIndex">
+        <GetBuildIndexFromTime Condition="'$(BuildIndex)'==''"
+             TimeStamp="$(BuildTime)"
+            >
+            <Output TaskParameter="BuildIndex" PropertyName="BuildIndex"/>
+        </GetBuildIndexFromTime>
+    </Target>
 
-    <Target Name="GetRepositoryInfo">
+    <Target Name="GetRepositoryInfo" DependsOnTargets="_EnsureBuildIndex">
         <GetRepositoryVersionInfo BuildVersionXmlFile="$(BuildVersionXmlFile)"
                                   IsAutomatedBuild="$(IsAutomatedBuild)"
                                   IsPullRequestBuild="$(IsPullRequestBuild)"
-                                  IsCIBuild="$(IsCIBuild)"
+                                  IsReleaseBuild="$(IsReleaseBuild)"
+                                  BuildMeta="$(BuildMeta)"
+                                  BuildIndex="$(BuildIndex)"
                                   >
             <Output TaskParameter="SemVer" PropertyName="_FullBuildNumber" />
             <Output TaskParameter="NuGetVersion" PropertyName="_PackageVersion" />

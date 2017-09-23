@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 15.0.26430.16
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSemVer.GitBuild", "CSemVer.GitBuild.csproj", "{DAC91FAD-ABD2-4F1F-900C-19110D68D9B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSemVer.GitBuild", ".\CSemVer.GitBuild\CSemVer.GitBuild.csproj", "{DAC91FAD-ABD2-4F1F-900C-19110D68D9B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSemVer.GitBuild.Tasks", ".\CSemVer.GitBuild.Tasks\CSemVer.GitBuild.Tasks.csproj", "{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{DAC91FAD-ABD2-4F1F-900C-19110D68D9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAC91FAD-ABD2-4F1F-900C-19110D68D9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAC91FAD-ABD2-4F1F-900C-19110D68D9B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1928D82A-06EF-47DF-A5C6-CB38A2F8D1F7}
 	EndGlobalSection
 EndGlobal

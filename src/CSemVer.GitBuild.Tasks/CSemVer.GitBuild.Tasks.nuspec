@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>CSemVer.GitBuild</id>
@@ -14,7 +14,7 @@
     <repository type="Git" url="https://github.com/UbiquityDotNET/CSemVer.GitBuild" />
   </metadata>
   <files>
-    <file src="$reporoot$BuildOutput\bin\CSemVer.GitBuild\Release\**\*.*" target="tasks" exclude="**\*.json"/>
+    <file src="$reporoot$BuildOutput\bin\CSemVer.GitBuild.Tasks\$configuration$\**\*.*" target="tasks"/>
     <file src="$reporoot$src\build\CSemVer.GitBuild.props" target="build\CSemVer.GitBuild.props" />
     <file src="$reporoot$src\build\CSemVer.GitBuild.targets" target="build\CSemVer.GitBuild.targets" />
     <file src="$reporoot$src\buildMultiTargeting\CSemVer.GitBuild.props" target="buildMultiTargeting\CSemVer.GitBuild.props" />

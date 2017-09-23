@@ -18,7 +18,7 @@ namespace CSemVer.GitBuild
         [CanBeNull]
         public string BuildMetadata { get; }
 
-        public CSemVer( int major, int minor , int patch, [CanBeNull] IPrereleaseVersion preRelVer = null, [CanBeNull] string buildmeta  = null )
+        public CSemVer( int major, int minor, int patch, [CanBeNull] IPrereleaseVersion preRelVer = null, [CanBeNull] string buildmeta = null )
         {
             major.ValidateRange( 0, 99999, nameof( major ) );
             minor.ValidateRange( 0, 49999, nameof( minor ) );

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <PackageVersion>0.6.0</PackageVersion>
+    <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>
+    <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion);configuration=$(Configuration)</NuspecProperties>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GetBuildIndexFromTime.cs" />
+    <Compile Include="GetRepositoryVersionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.props"/>
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.targets"/>
+    <Content Include="build\CSemVer.GitBuild.props"/>
+    <Content Include="build\CSemVer.GitBuild.targets"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CSemVer.GitBuild\CSemVer.GitBuild.csproj" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="All" />
+    <PackageReference Update="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

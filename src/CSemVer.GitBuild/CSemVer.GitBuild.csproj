@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>0.6.0-alpha</PackageVersion>
+    <Authors>Ubiquity.NET and contributors</Authors>
+    <Title>Library to Create CSemVer build numbering</Title>
+    <Description>This is the base library for creating CSemVer build numbers. It does not contain the MSBuild targets or tasks</Description>
+    <Copyright>Copyright (C) 2017, Ubiquity.NET Contributors</Copyright>
+    <LicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</LicenseUrl>
+    <ProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</ProjectUrl>
+    <Tags>.NET;Validators</Tags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="BuildVersionData.cs" />
+    <Compile Include="Versioning\CIPreReleaseVersion.cs" />
+    <Compile Include="Versioning\CSemVer.cs" />
+    <Compile Include="Versioning\CSemVerCI.cs" />
+    <Compile Include="Versioning\IPrereleaseVersion.cs" />
+    <Compile Include="Versioning\OfficialPreRelease.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" PrivateAssets="all" />
+    <PackageReference Include="Ubiquity.ArgValidators" Version="0.2.0-alpha" />
+    <PackageReference Update="SourceLink.Create.CommandLine" Version="2.2.1" />
+  </ItemGroup>
+</Project>
