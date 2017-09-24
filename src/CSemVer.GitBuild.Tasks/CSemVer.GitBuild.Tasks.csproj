@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
-    <PackageVersion>0.7.0-alpha</PackageVersion>
+    <PackageVersion>0.7.0-alpha.1</PackageVersion>
     <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>

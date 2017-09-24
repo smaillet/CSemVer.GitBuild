@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -20,7 +21,7 @@ namespace CSemVer.GitBuild
         [Required]
         public bool IsAutomatedBuild { get; set; }
 
-        [Required]
+        [CanBeNull]
         public string BuildMeta { get; set; }
 
         [Required]
