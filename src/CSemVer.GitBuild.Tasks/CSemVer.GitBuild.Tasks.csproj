@@ -3,7 +3,7 @@
     <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
     <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <PackageVersion>0.6.0</PackageVersion>
+    <PackageVersion>0.6.0-alpha</PackageVersion>
     <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>
     <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion);configuration=$(Configuration)</NuspecProperties>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -14,10 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.props" />
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.targets" />
-    <Content Include="build\CSemVer.GitBuild.props" />
-    <Content Include="build\CSemVer.GitBuild.targets" />
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.Tasks.props" />
+    <Content Include="buildMultiTargeting\CSemVer.GitBuild.Tasks.targets" />
+    <Content Include="build\CSemVer.GitBuild.Tasks.props" />
+    <Content Include="build\CSemVer.GitBuild.Tasks.targets" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="CSemVer.GitBuild.Tasks.nuspec" />
   </ItemGroup>
 
   <ItemGroup>
