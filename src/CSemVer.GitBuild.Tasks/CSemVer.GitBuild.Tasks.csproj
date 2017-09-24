@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
+    <PackageVersion>0.7.0-alpha</PackageVersion>
     <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <PackageVersion>0.6.0-alpha</PackageVersion>
     <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>
     <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion);configuration=$(Configuration)</NuspecProperties>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CSemVer.GitBuild\CSemVer.GitBuild.csproj" PrivateAssets="All" />
+    <!--<PackageReference Include="CSemVer.GitBuild.Tasks" Version="[0.6.0-alpha]" PrivateAssets="All" />-->
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="All" />
     <PackageReference Update="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" />
   </ItemGroup>

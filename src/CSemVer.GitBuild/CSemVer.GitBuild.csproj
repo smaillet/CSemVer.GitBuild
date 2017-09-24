@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageVersion>0.6.0-alpha</PackageVersion>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
     <Authors>Ubiquity.NET and contributors</Authors>
     <Title>Library to Create CSemVer build numbering</Title>
     <Description>This is the base library for creating CSemVer build numbers. It does not contain the MSBuild targets or tasks</Description>
@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <Compile Include="BuildVersionData.cs" />
+    <Compile Include="Validators.cs" />
     <Compile Include="Versioning\CIPreReleaseVersion.cs" />
     <Compile Include="Versioning\CSemVer.cs" />
     <Compile Include="Versioning\CSemVerCI.cs" />
@@ -22,8 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.ValueTuple" Version="4.4.0" PrivateAssets="all" />
-    <PackageReference Include="Ubiquity.ArgValidators" Version="0.2.0-alpha" />
+    <PackageReference Include="CSemVer.GitBuild.Tasks" Version="[0.6.0-alpha]" PrivateAssets="All" />
+    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <PackageReference Update="SourceLink.Create.CommandLine" Version="2.2.1" />
   </ItemGroup>
 </Project>
