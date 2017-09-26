@@ -3,7 +3,7 @@
   Since everything is just MSBUild or inline tasks It is possible to apply the versioning
   to this package without causing dependency cycles or build issues.
   -->
-  <Import Project="build\CSemVer.GitBuild.Tasks.props" />
+  <Import Project="build\CSemVer.Build.Tasks.props" />
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
     <PackageId>CSemVer.Build.Tasks</PackageId>
@@ -26,5 +26,5 @@
     <Content Include="buildMultiTargeting\**" PackagePath="buildMultiTargeting" />
   </ItemGroup>
 
-  <Import Project="build\CSemVer.GitBuild.Tasks.targets" />
+  <Import Project="build\CSemVer.Build.Tasks.targets" />
 </Project>
