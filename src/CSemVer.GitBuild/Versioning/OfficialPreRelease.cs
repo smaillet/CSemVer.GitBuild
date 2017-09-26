@@ -1,24 +1,42 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
-using JetBrains.Annotations;
-using Ubiquity.ArgValidators;
 
 namespace CSemVer.GitBuild
 {
-    internal class OfficialPreRelease
-        : IPrereleaseVersion
+    /// <summary>Marker Attribute to inform CodeAnalysis that a parameter is validated as non-null in a method</summary>
+    [SuppressMessage( "", "SA1402", Justification = "Too small to bother" )]
+    [AttributeUsage( AttributeTargets.Parameter, Inherited = true, AllowMultiple = false )]
+    public sealed class ValidatedNotNullAttribute
+        : Attribute
     {
-        public OfficialPreRelease( [NotNull] string preRelName, int preRelNumber = 0, int preRelFix = 0 )
-            : this( GetPreReleaseIndex( preRelName, nameof( preRelName ) ), preRelNumber, preRelFix )
+    }
+
+    [SuppressMessage( "", "SA1402", Justification = "Too small to bother" )]
+    internal class PrereleaseVersion
+    {
+        public PrereleaseVersion( string preRelName, int preRelNumber = 0, int preRelFix = 0 )
+            : this( GetPreReleaseIndex( preRelName ), preRelNumber, preRelFix )
         {
         }
 
-        public OfficialPreRelease( int preRelNameIndex, int preRelNumber = 0, int preRelFix = 0 )
+        public PrereleaseVersion( int preRelNameIndex, int preRelNumber = 0, int preRelFix = 0 )
         {
-            preRelNameIndex.ValidateRange( 0, 7, nameof( preRelNameIndex ) );
-            preRelNumber.ValidateRange( 0, 99, nameof( preRelNumber ) );
-            preRelFix.ValidateRange( 0, 99, nameof( preRelFix ) );
+            if( preRelNameIndex < 0 || preRelNameIndex > 7)
+            {
+                throw new ArgumentOutOfRangeException(nameof(preRelNameIndex), preRelNameIndex, "Expected value in range [0-7]");
+            }
+
+            if( preRelNumber < 0 || preRelNumber > 99 )
+            {
+                throw new ArgumentOutOfRangeException( nameof( preRelNumber ), preRelNumber, "Expected value in range [0-99]" );
+            }
+
+            if( preRelFix < 0 || preRelFix > 99 )
+            {
+                throw new ArgumentOutOfRangeException( nameof( preRelFix ), preRelFix, "Expected value in range [0-99]" );
+            }
 
             Version = (NameIndex: preRelNameIndex, Number: ( byte )preRelNumber, Fix: ( byte )preRelFix);
         }
@@ -35,11 +53,6 @@ namespace CSemVer.GitBuild
 
         public override string ToString( )
         {
-            return ToString( false );
-        }
-
-        public string ToString( bool useFullPreRelNames )
-        {
             var bldr = new StringBuilder( "-" );
             bldr.Append( PreReleaseName );
             if( PreReleaseNumber > 0 )
@@ -54,9 +67,13 @@ namespace CSemVer.GitBuild
             return bldr.ToString( );
         }
 
-        private static int GetPreReleaseIndex( [NotNull] string preRelName, [InvokerParameterNameAttribute] string paramName )
+        private static int GetPreReleaseIndex( [ValidatedNotNull] string preRelName )
         {
-            preRelName.ValidateNotNullOrWhiteSpace( paramName );
+            if( string.IsNullOrWhiteSpace( preRelName ) )
+            {
+                throw new ArgumentException( "Prerelease name cannot be null or empty", nameof( preRelName ) );
+            }
+
             var q = from name in PreReleaseNames.Select( ( n, i ) => (Name: n, Index: i) )
                     where 0 == string.Compare( name.Name, preRelName, StringComparison.OrdinalIgnoreCase )
                     select name;

@@ -1,10 +1,8 @@
 ﻿using System;
-using JetBrains.Annotations;
-using Ubiquity.ArgValidators;
 
 namespace CSemVer.GitBuild
 {
-    public class CSemVer
+    internal class CSemVer
     {
         public int Major { get; }
 
@@ -12,20 +10,30 @@ namespace CSemVer.GitBuild
 
         public int Patch { get; }
 
-        [CanBeNull]
-        public IPrereleaseVersion PrereleaseVersion { get; }
+        public PrereleaseVersion PrereleaseVersion { get; }
 
-        [CanBeNull]
         public string BuildMetadata { get; }
 
-        public CSemVer( int major, int minor, int patch, [CanBeNull] IPrereleaseVersion preRelVer = null, [CanBeNull] string buildmeta = null )
+        public CSemVer( int major, int minor, int patch, PrereleaseVersion preRelVer = null, string buildmeta = null )
         {
-            major.ValidateRange( 0, 99999, nameof( major ) );
-            minor.ValidateRange( 0, 49999, nameof( minor ) );
-            patch.ValidateRange( 0, 9999, nameof( patch ) );
-            if( buildmeta != null )
+            if( major < 0 || major > 99999 )
             {
-                buildmeta.ValidateLength( 0, 20, nameof( buildmeta ) );
+                throw new ArgumentOutOfRangeException( nameof( major ) );
+            }
+
+            if( minor < 0 || minor < 49999 )
+            {
+                throw new ArgumentOutOfRangeException( nameof( minor ) );
+            }
+
+            if( patch < 0 || patch > 9999 )
+            {
+                throw new ArgumentOutOfRangeException( nameof( patch ) );
+            }
+
+            if( buildmeta != null && buildmeta.Length > 20 )
+            {
+                throw new ArgumentException( "Build meta size must be less than 20 characters" );
             }
 
             Major = major;
@@ -37,18 +45,12 @@ namespace CSemVer.GitBuild
 
         public override string ToString( )
         {
-            return ToString( false );
-        }
-
-        [NotNull]
-        public string ToString( bool fullName )
-        {
             var bldr = new System.Text.StringBuilder( );
             bldr.AppendFormat( "{0}.{1}.{2}", Major, Minor, Patch );
 
             if( PrereleaseVersion != null )
             {
-                bldr.Append( PrereleaseVersion.ToString( fullName ) );
+                bldr.Append( PrereleaseVersion.ToString( ) );
             }
 
             if( BuildMetadata != null )
@@ -59,7 +61,6 @@ namespace CSemVer.GitBuild
             return bldr.ToString( );
         }
 
-        [NotNull]
         public Version FileVersion
         {
             get

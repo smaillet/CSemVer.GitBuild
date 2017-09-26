@@ -1,45 +1,154 @@
 ﻿<Project>
-    <UsingTask TaskName="GetRepositoryVersionInfo" AssemblyFile="$(CSemVerGitBuildTasksAssembly)" />
-    <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(CSemVerGitBuildTasksAssembly)" />
+    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <BuildMajor Required="true" />
+            <BuildMinor Required="true" />
+            <BuildPatch Required="true" />
+            <CiBuildName />
+            <CiBuildIndex />
+            <PreReleaseName />
+            <PreReleaseNumber />
+            <PreReleaseFix />
+            <BuildMeta />
+            <SemVer Output="true" />
+            <FileVersionMajor Output="true" />
+            <FileVersionMinor Output="true" />
+            <FileVersionBuild Output="true" />
+            <FileVersionRevision Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Class" Source="$(MSBuildThisFileDirectory)InlineTasks.cs" />
+        </Task>
+    </UsingTask>
+    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <TimeStamp ParameterType="System.DateTime" Required="true" />
+            <BuildIndex Output="true" />
+        </ParameterGroup>
+        <Task>
+            <Code Type="Fragment" Language="cs">
+<![CDATA[
+            var timeStamp = TimeStamp.ToUniversalTime( );
+            var midnightTodayUtc = new DateTime( timeStamp.Year, timeStamp.Month, timeStamp.Day, 0, 0, 0, DateTimeKind.Utc );
+            var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
+            uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
+            buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
+            BuildIndex = buildNumber.ToString();
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
+    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+        <ParameterGroup>
+            <BuildVersionXml Required="true"/>
+            <BuildMajor Output="true"/>
+            <BuildMinor Output="true"/>
+            <BuildPatch Output="true"/>
+            <PreReleaseName Output="true"/>
+            <PreReleaseNumber Output="true"/>
+            <PreReleaseFix Output="true"/>
+        </ParameterGroup>
+        <Task>
+            <Reference Include="System.Xml"/>
+            <Reference Include="System.Xml.Linq"/>
+            <Using Namespace="System"/>
+            <Using Namespace="System.IO"/>
+            <Code Type="Fragment" Language="cs">
+<![CDATA[
+            using( var stream = File.OpenText( BuildVersionXml ) )
+            {
+                var xdoc = System.Xml.Linq.XDocument.Load( stream, System.Xml.Linq.LoadOptions.None );
+                var data = xdoc.Element( "BuildVersionData" );
+
+                foreach( var attrib in data.Attributes( ) )
+                {
+                    switch( attrib.Name.LocalName )
+                    {
+                    case "BuildMajor":
+                        BuildMajor = attrib.Value;
+                        break;
+
+                    case "BuildMinor":
+                        BuildMinor = attrib.Value;
+                        break;
+
+                    case "BuildPatch":
+                        BuildPatch = attrib.Value;
+                        break;
+
+                    case "PreReleaseName":
+                        PreReleaseName = attrib.Value;
+                        break;
+
+                    case "PreReleaseNumber":
+                        PreReleaseNumber = attrib.Value;
+                        break;
+
+                    case "PreReleaseFix":
+                        PreReleaseFix = attrib.Value;
+                        break;
+                    }
+                }
+
+                // correct malformed values
+                if( string.IsNullOrWhiteSpace( PreReleaseName ) )
+                {
+                    PreReleaseNumber = "0";
+                    PreReleaseFix = "0";
+                }
+
+                if( PreReleaseNumber == "0" )
+                {
+                    PreReleaseFix = "0";
+                }
+            }
+]]>
+            </Code>
+        </Task>
+    </UsingTask>
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;Restore;_IntermediatePack"
             DependsOnTargets="GetRepositoryInfo;VerifyProvidedBuildVersion;SetVersionDependentProperties;"
             />
 
-    <Target Name="_EnsureBuildIndex">
-        <GetBuildIndexFromTime Condition="'$(BuildIndex)'==''"
-             TimeStamp="$(BuildTime)"
-            >
-            <Output TaskParameter="BuildIndex" PropertyName="BuildIndex"/>
+    <Target Name="GetRepositoryInfo">
+        <GetBuildIndexFromTime Condition="'$(CiBuildIndex)'==''"
+                               TimeStamp="$(BuildTime)"
+                               >
+            <Output TaskParameter="BuildIndex" PropertyName="CiBuildIndex"/>
         </GetBuildIndexFromTime>
-    </Target>
 
-    <Target Name="GetRepositoryInfo" DependsOnTargets="_EnsureBuildIndex">
-        <GetRepositoryVersionInfo BuildVersionXmlFile="$(BuildVersionXmlFile)"
-                                  IsAutomatedBuild="$(IsAutomatedBuild)"
-                                  IsPullRequestBuild="$(IsPullRequestBuild)"
-                                  IsReleaseBuild="$(IsReleaseBuild)"
-                                  BuildMeta="$(BuildMeta)"
-                                  BuildIndex="$(BuildIndex)"
-                                  >
-            <Output TaskParameter="SemVer" PropertyName="_FullBuildNumber" />
-            <Output TaskParameter="NuGetVersion" PropertyName="_PackageVersion" />
-            <Output TaskParameter="FileVersionMajor" PropertyName="_FileVersionMajor" />
-            <Output TaskParameter="FileVersionMinor" PropertyName="_FileVersionMinor" />
-            <Output TaskParameter="FileVersionBuild" PropertyName="_FileVersionBuild" />
-            <Output TaskParameter="FileVersionRevision" PropertyName="_FileVersionRevision" />
-            <Output TaskParameter="ExtraProperties" ItemName="_ExtraProperties" />
-        </GetRepositoryVersionInfo>
-        <!-- If FullBuildNumber not provided then use all of the generated version numbers/parts -->
-        <PropertyGroup Condition="'$(FullBuildNumber)'==''">
-            <FullBuildNumber>$(_FullBuildNumber)</FullBuildNumber>
-            <PackageVersion>$(_PackageVersion)</PackageVersion>
-            <FileVersionMajor>$(_FileVersionMajor)</FileVersionMajor>
-            <FileVersionMinor>$(_FileVersionMinor)</FileVersionMinor>
-            <FileVersionBuild>$(_FileVersionBuild)</FileVersionBuild>
-            <FileVersionRevision>$(_FileVersionRevision)</FileVersionRevision>
-        </PropertyGroup>
+        <ParseBuildVersionXml Condition="'$(BuildMajor)'==''"
+                              BuildVersionXml="$(BuildVersionXml)"
+                              >
+            <Output TaskParameter="BuildMajor" PropertyName="BuildMajor"/>
+            <Output TaskParameter="BuildMinor" PropertyName="BuildMinor"/>
+            <Output TaskParameter="BuildPatch" PropertyName="BuildPatch"/>
+            <Output TaskParameter="PreReleaseName" PropertyName="PreReleaseName" />
+            <Output TaskParameter="PreReleaseNumber" PropertyName="PreReleaseNumber" />
+            <Output TaskParameter="PreReleaseFix" PropertyName="PreReleaseFix" />
+        </ParseBuildVersionXml>
+
+        <!-- If FullBuildNumber not provided then generate version numbers/parts -->
+        <CreateVersionInfo Condition ="'$(FullBuildNumber)'==''"
+                           BuildMajor = "$(BuildMajor)"
+                           BuildMinor = "$(BuildMinor)"
+                           BuildPatch = "$(BuildPatch)"
+                           PreReleaseName = "$(PreReleaseName)"
+                           PreReleaseNumber = "$(PreReleaseNumber)"
+                           PreReleaseFix = "$(PreReleaseFix)"
+                           CiBuildName = "$(CiBuildName)"
+                           CiBuildIndex = "$(CiBuildIndex)"
+                           BuildMeta = "$(BuildMeta)"
+                           >
+            <Output TaskParameter="SemVer" PropertyName="FullBuildNumber" />
+            <Output TaskParameter="FileVersionMajor" PropertyName="FileVersionMajor" />
+            <Output TaskParameter="FileVersionMinor" PropertyName="FileVersionMinor" />
+            <Output TaskParameter="FileVersionBuild" PropertyName="FileVersionBuild" />
+            <Output TaskParameter="FileVersionRevision" PropertyName="FileVersionRevision" />
+            <Output TaskParameter="SemVer" PropertyName="PackageVersion"/>
+        </CreateVersionInfo>
     </Target>
 
     <Target Name="SetVersionDependentProperties">
@@ -99,8 +208,8 @@
     </Target>
 
     <Target Name="ShowBuildParams" BeforeTargets="Build;Pack">
-        <Message Importance="normal" Text="FullBuildNumber: $(FullBuildNumber)"/>
-        <Message Importance="normal" Text=" PackageVersion: $(PackageVersion)"/>
-        <Message Importance="normal" Text="    FileVersion: $(FileVersion)"/>
+        <Message Importance="High" Text="FullBuildNumber: $(FullBuildNumber)"/>
+        <Message Importance="High" Text=" PackageVersion: $(PackageVersion)"/>
+        <Message Importance="High" Text="    FileVersion: $(FileVersion)"/>
     </Target>
 </Project>

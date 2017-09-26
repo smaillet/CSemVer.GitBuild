@@ -1,11 +1,5 @@
 ﻿<Project TreatAsLocalProperty="_TaskFolder">
     <PropertyGroup>
-        <_TaskFolder Condition="'$(MSBuildRunTimeType)'=='Core'">netstandard1.3</_TaskFolder>
-        <_TaskFolder Condition="'$(MSBuildRunTimeType)'!='Core'">net46</_TaskFolder>
-        <CSemVerGitBuildTasksAssembly>$([MSBuild]::NormalizePath("$(MSBuildThisFileDirectory)", "..", "tasks", "$(_TaskFolder)", "CSemVer.GitBuild.Tasks.dll"))</CSemVerGitBuildTasksAssembly>
-        <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'=='' AND '$(CI)'!=''" >true</IsAutomatedBuild>
-        <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'==''" >false</IsAutomatedBuild>
-        <IsReleaseBuild Condition="'$(IsReleaseBuild)'==''">false</IsReleaseBuild>
         <BuildTime Condition="'$(BuildTime)'==''">$([System.DateTime]::UtcNow)</BuildTime>
     </PropertyGroup>
 </Project>

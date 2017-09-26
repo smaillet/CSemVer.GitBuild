@@ -1,34 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!--
+  Since everything is just MSBUild or inline tasks It is possible to apply the versioning
+  to this package without causing dependency cycles or build issues.
+  -->
+  <Import Project="build\CSemVer.GitBuild.Tasks.props" />
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.3</TargetFrameworks>
-    <PackageVersion>0.7.0-alpha.1</PackageVersion>
-    <!-- Silence warning that assembly isn't in lib folder (It's a task so it goes in the task folder - Duh!)-->
-    <NoPackageAnalysis>true</NoPackageAnalysis>
-    <NuspecFile>CSemVer.GitBuild.Tasks.nuspec</NuspecFile>
-    <NuspecProperties>reporoot=$(BuildRootDir);PackageVersion=$(PackageVersion);configuration=$(Configuration)</NuspecProperties>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <PackageId>CSemVer.Build.Tasks</PackageId>
+    <Authors>UbiquityDotNET</Authors>
+    <Copyright>Copyright (C) 2017, Ubiquity.NET Contributors</Copyright>
+    <Title>CSemver Build version generator for a build</Title>
+    <Description>
+      Automatic build versioning for consistent build versioning.
+    </Description>
+    <LicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</LicenseUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <NoCommonAnalyzers>true</NoCommonAnalyzers>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="GetBuildIndexFromTime.cs" />
-    <Compile Include="GetRepositoryVersionInfo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.Tasks.props" />
-    <Content Include="buildMultiTargeting\CSemVer.GitBuild.Tasks.targets" />
-    <Content Include="build\CSemVer.GitBuild.Tasks.props" />
-    <Content Include="build\CSemVer.GitBuild.Tasks.targets" />
+    <Content Include="build\**" PackagePath="build" />
+    <Content Include="buildMultiTargeting\**" PackagePath="buildMultiTargeting" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="CSemVer.GitBuild.Tasks.nuspec" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CSemVer.GitBuild\CSemVer.GitBuild.csproj" PrivateAssets="All" />
-    <!--<PackageReference Include="CSemVer.GitBuild.Tasks" Version="[0.6.0-alpha]" PrivateAssets="All" />-->
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.3.409" PrivateAssets="All" />
-    <PackageReference Update="SourceLink.Create.CommandLine" Version="2.3.1" PrivateAssets="All" />
-  </ItemGroup>
-
+  <Import Project="build\CSemVer.GitBuild.Tasks.targets" />
 </Project>

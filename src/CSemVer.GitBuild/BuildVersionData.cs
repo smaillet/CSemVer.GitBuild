@@ -1,51 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using JetBrains.Annotations;
-using Ubiquity.ArgValidators;
 
 namespace CSemVer.GitBuild
 {
-    /// <summary>Build mode to use to determine the format of the version</summary>
-    public enum BuildMode
-    {
-        /// <summary>Local Developer build</summary>
-        /// <remarks>
-        /// {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-DEV-{UTCTIME of build in hex}
-        /// </remarks>
-        LocalDev,
-
-        /// <summary>Automated validation build for a Pull Request</summary>
-        /// <remarks>
-        /// {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID}
-        /// <para>Pull request builds and artifacts are normally not published. A unique version
-        /// pattern is used to ensure that the PR is built against any dependencies that share the
-        /// same repository. (e.g. if project A depends on package B in the same repo then both
-        /// are given a CSemVer with higher precedence than CI or official releases to ensure
-        /// they are using what is built by the PR.</para>
-        /// </remarks>
-        PullRequest,
-
-        /// <summary>Continuous integration build for a repository</summary>
-        /// <remarks>
-        /// {BuildMajor}.{BuildMinor}.{BuildPatch}{double dash}ci-REL-{UTCTIME of HEAD Commit}+{BuildMeta}
-        /// <para> CI build versions are commonly released to the public via a dedicated gallery source for
-        /// testing/early adopter feedback etc... Frequency of CI builds varies depending on project needs
-        /// and can include a new build on every commit, rolling builds on a schedule, nightly builds, etc...
-        /// </para>
-        /// </remarks>
-        ContinuousIntegration,
-
-        /// <summary>Official release published build, may be a pre-release version but not a CI build</summary>
-        /// <remarks>
-        /// {BuildMajor}.{BuildMinor}.{BuildPatch}{single dash}{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{BuildMeta}
-        /// or {BuildMajor}.{BuildMinor}.{BuildPatch}+{BuildMeta}
-        /// </remarks>
-        OfficialRelease
-    }
-
     /// <summary>Version data for a build</summary>
-    public class BuildVersionData
+    internal class BuildVersionData
     {
         /// <summary>Major portion of the build</summary>
         public UInt16 BuildMajor { get; private set; }
@@ -66,52 +26,10 @@ namespace CSemVer.GitBuild
 
         public IReadOnlyDictionary<string, string> AdditionalProperties => ExtraPropertyMap;
 
-        [CanBeNull]
         public string BuildVersionXmlFile { get; private set; }
-
-        public CSemVer CreateSemVer( BuildMode buildMode, string buildIndex, [CanBeNull] string buildmeta = null )
-        {
-            buildMode.ValidateDefined( nameof( buildMode ) );
-            buildIndex.ValidateNotNullOrWhiteSpace( nameof( buildIndex ) );
-
-            IPrereleaseVersion preReleaseInfo = null;
-            switch( buildMode )
-            {
-            case BuildMode.LocalDev:
-                // local dev builds are always newer than any other builds
-                preReleaseInfo = new CIPreReleaseVersion( "DEV", buildIndex );
-                break;
-
-            case BuildMode.PullRequest:
-                // PR builds should have a higher precedence than CI or release so that the
-                // builds pull in the components built in previous stages of the current build
-                // instead of the official CI or released builds.
-                preReleaseInfo = new CIPreReleaseVersion( "PRQ", buildIndex );
-                break;
-
-            case BuildMode.ContinuousIntegration:
-                preReleaseInfo = new CIPreReleaseVersion( "REL", buildIndex );
-                break;
-
-            case BuildMode.OfficialRelease:
-                if( !string.IsNullOrWhiteSpace( PreReleaseName ) )
-                {
-                    preReleaseInfo = new OfficialPreRelease( PreReleaseName, PreReleaseNumber, PreReleaseFix );
-                }
-
-                break;
-
-            default:
-                throw new InvalidOperationException( "Unexpected/Unsupported repository state" );
-            }
-
-            return new CSemVer( BuildMajor, BuildMinor, BuildPatch, preReleaseInfo, buildmeta );
-        }
 
         public static BuildVersionData Load( string path )
         {
-            path.ValidateNotNullOrWhiteSpace( nameof( path ) );
-
             var retVal = new BuildVersionData( );
             using( var stream = File.OpenText( path ) )
             {
@@ -174,6 +92,6 @@ namespace CSemVer.GitBuild
             return retVal;
         }
 
-        private Dictionary<string,string> ExtraPropertyMap = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> ExtraPropertyMap = new Dictionary<string, string>();
     }
 }
