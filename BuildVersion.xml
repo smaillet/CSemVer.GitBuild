@@ -2,9 +2,7 @@
 This file is updated on a public release to set the next build that pre-releases will increment to
 -->
 <BuildVersionData
-    ReleaseBranch="master"
-    BuildMajor = "0"
-    BuildMinor = "8"
+    BuildMajor = "1"
+    BuildMinor = "0"
     BuildPatch = "0"
-    PreReleaseName = "alpha"
 />
