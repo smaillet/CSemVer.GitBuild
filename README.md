@@ -1,5 +1,5 @@
 # CSemVer.GitBuild
-Automated Constrained Semantic Versioning for Git repos
+Automated Constrained Semantic Versioning for Git repositories
 
 ## Build Status
 [![Build status](https://ci.appveyor.com/api/projects/status/nfixkakus282t06u?svg=true)](https://ci.appveyor.com/project/UbiquityDotNet/csemver-gitbuild)
@@ -10,8 +10,8 @@ NUGET Packages use a SemVer 2.0 (see http://semver.org)
 
 However, SemVer 2.0 doesn't consider or account for publicly available CI builds.
 SemVer is only concerned with official releases. This makes CI builds producing 
-versioned pacakges challenging. Fortunately, some one has already defined a solution
-to using SemVer in a specailly constrained way to ensure compatibility, while also 
+versioned packages challenging. Fortunately, some one has already defined a solution
+to using SemVer in a specially constrained way to ensure compatibility, while also 
 allowing for automated CI builds. These new versions are called a [Constrained Semantic
 Version](http://csemver.org) (CSemVer).
 
@@ -20,7 +20,7 @@ In the real world there are often cases where there are additional builds that a
 official releases and CI builds. Including Local developer builds, builds generated from a Pull 
 Request (a.k.a Automated buddy build). CSemVer doesn't explicitly define any format for these cases.
 So this library defines a pattern of versioning that is fully compatible with CSemVer and allows for
-the additional build types in a way that reatins precedence having the least surprising consequences.
+the additional build types in a way that retains precedence having the least surprising consequences.
 In particular, local build packages have a higher precedence that CI or release versions if all other
 components of the version match. This ensure that what you are building includes the dependent packages
 you just built instead of the last one released publicly.
@@ -29,10 +29,10 @@ The following is a list of the version formats in descending order of precedence
 
 | Build Type | Format |
 |------------|--------|
-| Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}{double dash}ci-DEV-{UTCTIME of build in hex} |
-| Pull Request | {BuildMajor}.{BuildMinor}.{BuildPatch}{double dash}ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID} |
-| Official CI builds | {BuildMajor}.{BuildMinor}.{BuildPatch}{double dash}ci-REL-{UTCTIME of HEAD Commit}+{COMMIT ID} |
-| Official PreRelease | {BuildMajor}.{BuildMinor}.{BuildPatch}{single dash}{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{COMMIT ID} |
+| Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-DEV-{UTCTIME of build in hex} |
+| Pull Request | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID} |
+| Official CI builds | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-REL-{UTCTIME of HEAD Commit}+{COMMIT ID} |
+| Official PreRelease | {BuildMajor}.{BuildMinor}.{BuildPatch}-{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{COMMIT ID} |
 | Official Release | {BuildMajor}.{BuildMinor}.{BuildPatch}+{COMMIT ID} |
 
 This library provides a single package to automate the generation of these versions in an easy to use

@@ -33,7 +33,7 @@
             var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
             uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
             buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
-            BuildIndex = buildNumber.ToString();
+            BuildIndex = buildNumber.ToString("X08");
 ]]>
             </Code>
         </Task>
