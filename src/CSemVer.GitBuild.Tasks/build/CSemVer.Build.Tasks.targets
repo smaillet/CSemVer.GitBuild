@@ -1,5 +1,5 @@
 ﻿<Project>
-    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
+    <UsingTask Condition="'$(RoslynCodeTaskFactory)'!=''" TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <BuildMajor Required="true" />
             <BuildMinor Required="true" />
@@ -23,7 +23,7 @@
             <Code Type="Class" Source="$(MSBuildThisFileDirectory)InlineTasks.cs" />
         </Task>
     </UsingTask>
-    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
+    <UsingTask Condition="'$(RoslynCodeTaskFactory)'!=''" TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <TimeStamp ParameterType="System.DateTime" Required="true" />
             <BuildIndex Output="true" />
@@ -41,7 +41,7 @@
             </Code>
         </Task>
     </UsingTask>
-    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
+    <UsingTask Condition="'$(RoslynCodeTaskFactory)'!=''" TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <BuildVersionXml Required="true"/>
             <BuildMajor Output="true"/>
