@@ -132,6 +132,7 @@ namespace CSemVer.GitBuild
                 throw new ArgumentException( "CiBuildIndex is required if CiBuildName is provided" );
             }
 
+            PreReleaseNameIndex = preRelNameIndex;
             PreReleaseNumber = preRelNumber;
             PreReleaseFix = preRelFix;
             CiBuildName = ciBuildName;

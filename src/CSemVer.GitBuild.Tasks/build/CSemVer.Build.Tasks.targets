@@ -1,5 +1,5 @@
 ﻿<Project>
-    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <BuildMajor Required="true" />
             <BuildMinor Required="true" />
@@ -17,10 +17,13 @@
             <FileVersionRevision Output="true" />
         </ParameterGroup>
         <Task>
+            <Reference Include="System.Diagnostics.Tools"/>
+            <Reference Include="System.Text.RegularExpressions"/>
+            <Reference Include="System.Runtime.Extensions"/>
             <Code Type="Class" Source="$(MSBuildThisFileDirectory)InlineTasks.cs" />
         </Task>
     </UsingTask>
-    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <TimeStamp ParameterType="System.DateTime" Required="true" />
             <BuildIndex Output="true" />
@@ -33,12 +36,12 @@
             var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
             uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
             buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
-            BuildIndex = buildNumber.ToString("X08");
+            BuildIndex = buildNumber.ToString();
 ]]>
             </Code>
         </Task>
     </UsingTask>
-    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(RoslynCodeTaskFactory)">
         <ParameterGroup>
             <BuildVersionXml Required="true"/>
             <BuildMajor Output="true"/>
@@ -49,8 +52,8 @@
             <PreReleaseFix Output="true"/>
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Xml"/>
-            <Reference Include="System.Xml.Linq"/>
+            <Reference Include="System.Xml.ReaderWriter"/>
+            <Reference Include="System.Xml.XDocument"/>
             <Using Namespace="System"/>
             <Using Namespace="System.IO"/>
             <Code Type="Fragment" Language="cs">
@@ -86,6 +89,10 @@
 
                     case "PreReleaseFix":
                         PreReleaseFix = attrib.Value;
+                        break;
+
+                    default:
+                        Log.LogWarning("Unexpected attribute {0}", attrib.Name.LocalName);
                         break;
                     }
                 }

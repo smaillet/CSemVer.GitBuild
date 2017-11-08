@@ -29,9 +29,9 @@ The following is a list of the version formats in descending order of precedence
 
 | Build Type | Format |
 |------------|--------|
-| Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-DEV-{UTCTIME of build in hex} |
+| Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-ZZZ-{UTCTIME of build in hex} |
 | Pull Request | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID} |
-| Official CI builds | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-REL-{UTCTIME of HEAD Commit}+{COMMIT ID} |
+| Official CI builds | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-BLD-{UTCTIME of HEAD Commit}+{COMMIT ID} |
 | Official PreRelease | {BuildMajor}.{BuildMinor}.{BuildPatch}-{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{COMMIT ID} |
 | Official Release | {BuildMajor}.{BuildMinor}.{BuildPatch}+{COMMIT ID} |
 
