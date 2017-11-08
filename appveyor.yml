@@ -17,7 +17,7 @@ init:
   - git config --global core.autocrlf input
 
 before_build:
-  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln
+  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln /p:Restoring=true
 
 build:
   project: src\CSemVer.GitBuild.sln
