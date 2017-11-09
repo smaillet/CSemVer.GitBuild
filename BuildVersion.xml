@@ -4,7 +4,7 @@ This file is updated on a public release to set the next build that pre-releases
 <BuildVersionData
     BuildMajor = "1"
     BuildMinor = "0"
-    BuildPatch = "1"
+    BuildPatch = "2"
     PreReleaseName = "beta"
     PreReleaseNumber = "0"
 />
