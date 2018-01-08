@@ -17,7 +17,7 @@ init:
 configuration: Release
 
 before_build:
-  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln
+  - cmd: msbuild /t:Restore src\CSemVer.Build.Tasks.sln
 
 build:
   project: src\CSemVer.Build.Tasks.sln
