@@ -16,6 +16,9 @@ init:
 
 configuration: Release
 
+before_build:
+  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln
+
 build:
   project: src\CSemVer.Build.Tasks.sln
   verbosity: minimal
