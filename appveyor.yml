@@ -1,7 +1,5 @@
 version: 1.0.{build}
 
-configuration: Release
-
 nuget:
   account_feed: false
   project_feed: false
@@ -16,11 +14,10 @@ image: Visual Studio 2017
 init:
   - git config --global core.autocrlf input
 
-before_build:
-  - cmd: msbuild /t:Restore src\CSemVer.GitBuild.sln
+configuration: Release
 
 build:
-  project: src\CSemVer.GitBuild.sln
+  project: src\CSemVer.Build.sln
   verbosity: minimal
 
 artifacts:

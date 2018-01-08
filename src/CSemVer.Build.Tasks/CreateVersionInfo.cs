@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-namespace CSemVer.GitBuild
+namespace CSemVer.Build.Tasks
 {
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
     public class CreateVersionInfo

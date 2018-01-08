@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 15.0.26430.16
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSemVer.GitBuild.Tasks", "CSemVer.GitBuild.Tasks\CSemVer.GitBuild.Tasks.csproj", "{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSemVer.Build.Tasks", "CSemVer.Build.Tasks\CSemVer.Build.Tasks.csproj", "{7EAFFC51-87D5-4EEA-AB68-3BF8CD634DF7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B98EAC76-ACDD-4A4C-9426-6606BA5DF8A7}"
 	ProjectSection(SolutionItems) = preProject

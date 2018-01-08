@@ -1,120 +1,7 @@
 ﻿<Project>
-    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <BuildMajor Required="true" />
-            <BuildMinor Required="true" />
-            <BuildPatch Required="true" />
-            <CiBuildName />
-            <CiBuildIndex />
-            <PreReleaseName />
-            <PreReleaseNumber />
-            <PreReleaseFix />
-            <BuildMeta />
-            <SemVer Output="true" />
-            <FileVersionMajor Output="true" />
-            <FileVersionMinor Output="true" />
-            <FileVersionBuild Output="true" />
-            <FileVersionRevision Output="true" />
-        </ParameterGroup>
-        <Task>
-            <!--<Reference Include="System.Diagnostics.Tools"/>
-            <Reference Include="System.Text.RegularExpressions"/>
-            <Reference Include="System.Runtime.Extensions"/>-->
-            <Code Type="Class" Source="$(MSBuildThisFileDirectory)InlineTasks.cs" />
-        </Task>
-    </UsingTask>
-    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <TimeStamp ParameterType="System.DateTime" Required="true" />
-            <BuildIndex Output="true" />
-        </ParameterGroup>
-        <Task>
-            <Code Type="Fragment" Language="cs">
-<![CDATA[
-            var timeStamp = TimeStamp.ToUniversalTime( );
-            var midnightTodayUtc = new DateTime( timeStamp.Year, timeStamp.Month, timeStamp.Day, 0, 0, 0, DateTimeKind.Utc );
-            var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
-            uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
-            buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
-            BuildIndex = buildNumber.ToString();
-]]>
-            </Code>
-        </Task>
-    </UsingTask>
-    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
-        <ParameterGroup>
-            <BuildVersionXml Required="true"/>
-            <BuildMajor Output="true"/>
-            <BuildMinor Output="true"/>
-            <BuildPatch Output="true"/>
-            <PreReleaseName Output="true"/>
-            <PreReleaseNumber Output="true"/>
-            <PreReleaseFix Output="true"/>
-        </ParameterGroup>
-        <Task>
-            <!--<Reference Include="System.Xml.ReaderWriter"/>
-            <Reference Include="System.Xml.XDocument"/>-->
-            <Reference Include="System.Xml"/>
-            <Reference Include="System.Xml.Linq"/>
-            <Using Namespace="System"/>
-            <Using Namespace="System.IO"/>
-            <Code Type="Fragment" Language="cs">
-<![CDATA[
-            using( var stream = File.OpenText( BuildVersionXml ) )
-            {
-                var xdoc = System.Xml.Linq.XDocument.Load( stream, System.Xml.Linq.LoadOptions.None );
-                var data = xdoc.Element( "BuildVersionData" );
-
-                foreach( var attrib in data.Attributes( ) )
-                {
-                    switch( attrib.Name.LocalName )
-                    {
-                    case "BuildMajor":
-                        BuildMajor = attrib.Value;
-                        break;
-
-                    case "BuildMinor":
-                        BuildMinor = attrib.Value;
-                        break;
-
-                    case "BuildPatch":
-                        BuildPatch = attrib.Value;
-                        break;
-
-                    case "PreReleaseName":
-                        PreReleaseName = attrib.Value;
-                        break;
-
-                    case "PreReleaseNumber":
-                        PreReleaseNumber = attrib.Value;
-                        break;
-
-                    case "PreReleaseFix":
-                        PreReleaseFix = attrib.Value;
-                        break;
-
-                    default:
-                        Log.LogWarning("Unexpected attribute {0}", attrib.Name.LocalName);
-                        break;
-                    }
-                }
-
-                // correct malformed values
-                if( string.IsNullOrWhiteSpace( PreReleaseName ) )
-                {
-                    PreReleaseNumber = "0";
-                    PreReleaseFix = "0";
-                }
-
-                if( PreReleaseNumber == "0" )
-                {
-                    PreReleaseFix = "0";
-                }
-            }
-]]>
-            </Code>
-        </Task>
-    </UsingTask>
+    <UsingTask TaskName="CreateVersionInfo" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
+    <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
+    <UsingTask TaskName="ParseBuildVersionXml" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;_IntermediatePack"
@@ -217,8 +104,8 @@
     </Target>
 
     <Target Name="ShowBuildParams" BeforeTargets="Build;Pack">
-        <Message Importance="High" Text="FullBuildNumber: $(FullBuildNumber)"/>
-        <Message Importance="High" Text=" PackageVersion: $(PackageVersion)"/>
-        <Message Importance="High" Text="    FileVersion: $(FileVersion)"/>
+        <Message Text="FullBuildNumber: $(FullBuildNumber)"/>
+        <Message Text=" PackageVersion: $(PackageVersion)"/>
+        <Message Text="    FileVersion: $(FileVersion)"/>
     </Target>
 </Project>

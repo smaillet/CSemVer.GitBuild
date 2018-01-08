@@ -10,7 +10,7 @@ NUGET Packages use a SemVer 2.0 (see http://semver.org)
 
 However, SemVer 2.0 doesn't consider or account for publicly available CI builds.
 SemVer is only concerned with official releases. This makes CI builds producing 
-versioned packages challenging. Fortunately, some one has already defined a solution
+versioned packages challenging. Fortunately, someone has already defined a solution
 to using SemVer in a specially constrained way to ensure compatibility, while also 
 allowing for automated CI builds. These new versions are called a [Constrained Semantic
 Version](http://csemver.org) (CSemVer).

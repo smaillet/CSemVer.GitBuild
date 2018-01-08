@@ -49,13 +49,21 @@
         <IsReleaseBuild Condition="'$(IsReleaseBuild)'=='' AND '$(APPVEYOR_REPO_TAG)'=='true' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'=='' AND '$(APPVEYOR_BRANCH)'=='master'">true</IsReleaseBuild>
         <IsReleaseBuild Condition="'$(IsReleaseBuild)'==''">false</IsReleaseBuild>
         <BuildVersionXml>$(MSBuildThisFileDirectory)BuildVersion.xml</BuildVersionXml>
-        <BuildTimeStamp Condition="'$(BuildTimeStamp)'=='' AND '$(APPVEYOR_REPO_COMMIT_TIMESTAMP)'!=''">$(APPVEYOR_REPO_COMMIT_TIMESTAMP)</BuildTimeStamp>
+        <BuildTime Condition="'$(BuildTime)'=='' AND '$(APPVEYOR_REPO_COMMIT_TIMESTAMP)'!=''">$(APPVEYOR_REPO_COMMIT_TIMESTAMP)</BuildTime>
         <!--
-        Force the timestamp into ISO 8601 format so it is locale neutral
+        Force the time-stamp into ISO 8601 format so it is locale neutral
         Furthermore UTC is used to ensure consistency of the stamp across
         various geopolitical time zones.
         -->
         <BuildTime Condition="'$(BuildTime)'==''">$([System.DateTime]::UtcNow.ToString("o"))</BuildTime>
+        <!--
+        While these names can be overridden it is important to keep in mind the sort ordering,
+        ideally a local dev build should have a higher order than any other build (all other elements on
+        the left being equal). This ensures that local edit, build, debug cycles are really using what was built.
+        -->
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true'">PRQ</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true'">BLD</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'==''">ZZZ</CiBuildName>
     </PropertyGroup>
     <Choose>
         <!-- TODO: Split this out so analyzers and common settings are in a common package for easier sharing amongst repositories and projects -->
@@ -63,8 +71,6 @@
         <When Condition="'$(MSBuildProjectExtension)'=='.csproj'">
             <PropertyGroup>
                 <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Ubiquity.NET.ruleset</CodeAnalysisRuleSet>
-                <EnableDefaultItems>false</EnableDefaultItems>
-                <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
                 <Determenistic>true</Determenistic>
                 <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
             </PropertyGroup>

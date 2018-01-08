@@ -1,24 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!--
-  Since everything is just MSBUild or inline tasks It is possible to apply the versioning
-  to this package without causing dependency cycles or build issues.
-  -->
-  <Import Project="build\CSemVer.Build.Tasks.props" Condition="'$(Restoring)'!='true'" />
   <PropertyGroup>
-    <TargetFramework>netstandard1.5</TargetFramework>
+    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
+    <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard1.6</TargetFrameworks>
     <PackageId>CSemVer.Build.Tasks</PackageId>
     <Authors>UbiquityDotNET</Authors>
     <Copyright>Copyright (C) 2017, Ubiquity.NET Contributors</Copyright>
     <Title>CSemver Build version generator for a build</Title>
-    <Description>
-      Automatic build versioning for consistent build versioning.
-    </Description>
+    <Description>Automatic build versioning with support for consistent build versioning across developers builds, CI builds and official release builds.</Description>
     <LicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</LicenseUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NoCommonAnalyzers>true</NoCommonAnalyzers>
+    <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,8 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RoslynCodeTaskFactory" Version="1.1.7" />
+    <PackageReference Include="Microsoft.Build.Framework" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.5.180" />
+    <PackageReference Update="Microsoft.Build.Framework" Version="15.5.180" />
+    <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
   </ItemGroup>
 
-  <Import Project="build\CSemVer.Build.Tasks.targets" Condition="'$(Restoring)'!='true'" />
 </Project>
