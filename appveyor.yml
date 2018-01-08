@@ -17,7 +17,7 @@ init:
 configuration: Release
 
 build:
-  project: src\CSemVer.Build.sln
+  project: src\CSemVer.Build.Tasks.sln
   verbosity: minimal
 
 artifacts:
