@@ -1,7 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net46;netstandard1.6</TargetFrameworks>
-    <TargetFrameworks Condition="$(OS) != 'Windows_NT'">netstandard1.6</TargetFrameworks>
+    <TargetFrameworks>net47;netstandard2.0</TargetFrameworks>
     <PackageId>CSemVer.Build.Tasks</PackageId>
     <Authors>UbiquityDotNET</Authors>
     <Copyright>Copyright (C) 2017, Ubiquity.NET Contributors</Copyright>
@@ -12,6 +11,11 @@
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NoCommonAnalyzers>true</NoCommonAnalyzers>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
+    <PackageLicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>CSemVer;CI;SemVer</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,8 +25,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Build.Framework" />
-    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.5.180" />
-    <PackageReference Update="Microsoft.Build.Framework" Version="15.5.180" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.7.179" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.7.179" />
     <PackageReference Update="@(PackageReference)" PrivateAssets="All" />
   </ItemGroup>
 

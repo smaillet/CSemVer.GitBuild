@@ -51,15 +51,12 @@ namespace CSemVer.Build.Tasks
         public override bool Execute( )
         {
             PrereleaseVersion preReleaseVersion = null;
-            if( !string.IsNullOrWhiteSpace( PreReleaseName ) )
-            {
-                preReleaseVersion = new PrereleaseVersion( PreReleaseName
-                                                         , Convert.ToInt32(PreReleaseNumber)
-                                                         , Convert.ToInt32(PreReleaseFix)
-                                                         , CiBuildName
-                                                         , CiBuildIndex
-                                                         );
-            }
+            preReleaseVersion = new PrereleaseVersion( PreReleaseName
+                                                     , string.IsNullOrWhiteSpace(PreReleaseNumber) ? 0 : Convert.ToInt32( PreReleaseNumber )
+                                                     , string.IsNullOrWhiteSpace(PreReleaseFix) ? 0 : Convert.ToInt32( PreReleaseFix )
+                                                     , CiBuildName
+                                                     , CiBuildIndex
+                                                     );
 
             var fullVersion = new CSemVer( Convert.ToInt32( BuildMajor )
                                          , Convert.ToInt32( BuildMinor )
@@ -90,41 +87,46 @@ namespace CSemVer.Build.Tasks
     {
         public PrereleaseVersion( string preRelName, int preRelNumber, int preRelFix, string ciBuildName, string ciBuildIndex )
         {
-            if( string.IsNullOrWhiteSpace( preRelName ) )
+            if( !string.IsNullOrWhiteSpace( preRelName ) )
             {
-                throw new ArgumentException( "Prerelease name cannot be null or empty", "preRelName" );
+                var q = from name in PreReleaseNames.Select( ( n, i ) => new { Name = n, Index = i } )
+                        where 0 == string.Compare( name.Name, preRelName, StringComparison.OrdinalIgnoreCase )
+                        select name;
+
+                var nameIndex = q.FirstOrDefault( );
+                PreReleaseNameIndex = nameIndex.Name == null ? -1 : nameIndex.Index;
+
+                if( PreReleaseNameIndex < 0 || PreReleaseNameIndex > 7 )
+                {
+                    throw new ArgumentException( "Expected value in range [0-7]", "preRelName" );
+                }
+
+                PreReleaseNumber = preRelNumber;
+                PreReleaseFix = preRelFix;
+
+                if( PreReleaseNumber < 0 || PreReleaseNumber > 99 )
+                {
+                    throw new ArgumentOutOfRangeException( "preRelNumber", PreReleaseNumber, "Expected value in range [0-99]" );
+                }
+
+                if( PreReleaseFix < 0 || PreReleaseFix > 99 )
+                {
+                    throw new ArgumentOutOfRangeException( "preRelFix", PreReleaseFix, "Expected value in range [0-99]" );
+                }
             }
-
-            var q = from name in PreReleaseNames.Select( ( n, i ) => new { Name = n, Index = i } )
-                    where 0 == string.Compare( name.Name, preRelName, StringComparison.OrdinalIgnoreCase )
-                    select name;
-
-            var nameIndex = q.FirstOrDefault( );
-            int preRelNameIndex = nameIndex.Name == null ? -1 : nameIndex.Index;
-
-            if( preRelNameIndex < 0 || preRelNameIndex > 7 )
+            else
             {
-                throw new ArgumentException( "Expected value in range [0-7]", "preRelName" );
-            }
-
-            if( preRelNumber < 0 || preRelNumber > 99 )
-            {
-                throw new ArgumentOutOfRangeException( "preRelNumber", preRelNumber, "Expected value in range [0-99]" );
-            }
-
-            if( preRelFix < 0 || preRelFix > 99 )
-            {
-                throw new ArgumentOutOfRangeException( "preRelFix", preRelFix, "Expected value in range [0-99]" );
+                PreReleaseNameIndex = -1;
             }
 
             if( !string.IsNullOrEmpty( ciBuildName ) && !CiBuildIdRegEx.IsMatch( ciBuildName ) )
             {
-                throw new ArgumentException( string.Format("Invalid build name '{0}'", ciBuildName), "ciBuildName" );
+                throw new ArgumentException( string.Format( "Invalid build name '{0}'", ciBuildName ), "ciBuildName" );
             }
 
             if( !string.IsNullOrEmpty( ciBuildIndex ) && !CiBuildIdRegEx.IsMatch( ciBuildIndex ) )
             {
-                throw new ArgumentException( string.Format("Invalid build index '{0}'", ciBuildIndex), "ciBuildIndex" );
+                throw new ArgumentException( string.Format( "Invalid build index '{0}'", ciBuildIndex ), "ciBuildIndex" );
             }
 
             if( !string.IsNullOrEmpty( ciBuildName ) && string.IsNullOrEmpty( ciBuildIndex ) )
@@ -132,18 +134,16 @@ namespace CSemVer.Build.Tasks
                 throw new ArgumentException( "CiBuildIndex is required if CiBuildName is provided" );
             }
 
-            PreReleaseNameIndex = preRelNameIndex;
-            PreReleaseNumber = preRelNumber;
-            PreReleaseFix = preRelFix;
             CiBuildName = ciBuildName;
             CiBuildIndex = ciBuildIndex;
         }
 
+        [SuppressMessage( "", "IDE0025", Justification = "Inline task compiler doesn't support expression bodies" )]
         public string PreReleaseName
         {
             get
             {
-                return PreReleaseNames[ PreReleaseNameIndex ];
+                return PreReleaseNameIndex >= 0 ? PreReleaseNames[ PreReleaseNameIndex ] : null;
             }
         }
 
@@ -153,27 +153,41 @@ namespace CSemVer.Build.Tasks
 
         public int PreReleaseFix { get; private set; }
 
-        public string CiBuildName { get; private set; }
+        public string CiBuildName { get; set; }
 
-        public string CiBuildIndex { get; private set; }
+        public string CiBuildIndex { get; set; }
 
         public override string ToString( )
         {
-            var bldr = new StringBuilder( "-" );
-            bldr.Append( PreReleaseName );
-            if( PreReleaseNumber > 0 )
+            bool hasCIBuild = !string.IsNullOrEmpty( CiBuildName );
+            bool hasPreRel = PreReleaseNameIndex >= 0;
+            var bldr = new StringBuilder();
+
+            if( hasPreRel )
             {
-                bldr.AppendFormat( ".{0}", PreReleaseNumber );
-                if( PreReleaseFix > 0 )
+                bldr.Append( '-' );
+                bldr.Append( PreReleaseName );
+
+                if( PreReleaseNumber > 0 || hasCIBuild )
                 {
-                    bldr.AppendFormat( ".{0}", PreReleaseFix );
+                    bldr.AppendFormat( ".{0}", PreReleaseNumber );
+                    if( PreReleaseFix > 0 || hasCIBuild )
+                    {
+                        bldr.AppendFormat( ".{0}", PreReleaseFix );
+                    }
                 }
+            }
+
+            if( hasCIBuild )
+            {
+                bldr.Append( hasPreRel ? "." : "--" );
+                bldr.AppendFormat( "ci-{0}.{1}", CiBuildName, CiBuildIndex );
             }
 
             return bldr.ToString( );
         }
 
-        private static Regex CiBuildIdRegEx = new Regex(@"[a-zA-z0-9\-]+");
+        private static readonly Regex CiBuildIdRegEx = new Regex(@"[a-zA-z0-9\-]+");
         private static readonly string[] PreReleaseNames = { "alpha", "beta", "delta", "epsilon", "gamma", "kappa", "prerelease", "rc" };
     }
 
@@ -190,7 +204,12 @@ namespace CSemVer.Build.Tasks
 
         public string BuildMetadata { get; private set; }
 
-        public CSemVer( int major, int minor, int patch, PrereleaseVersion preRelVer = null, string buildmeta = null )
+        public CSemVer( int major
+                      , int minor
+                      , int patch
+                      , PrereleaseVersion preRelVer = null
+                      , string buildmeta = null
+                      )
         {
             if( major < 0 || major > 99999 )
             {
@@ -227,10 +246,6 @@ namespace CSemVer.Build.Tasks
             if( PrereleaseVersion != null )
             {
                 bldr.Append( PrereleaseVersion.ToString( ) );
-                if( PrereleaseVersion.CiBuildName != null )
-                {
-                    bldr.AppendFormat( "--ci-{0}.{1}", PrereleaseVersion.CiBuildName, PrereleaseVersion.CiBuildIndex );
-                }
             }
 
             if( BuildMetadata != null )
@@ -268,7 +283,7 @@ namespace CSemVer.Build.Tasks
             }
         }
 
-        private static Version MakeVersion(ulong value)
+        private static Version MakeVersion( ulong value )
         {
             ushort revision = ( ushort )( value % 65536 );
             ulong rem = ( value - revision ) / 65536;

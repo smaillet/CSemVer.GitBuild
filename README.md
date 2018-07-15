@@ -1,5 +1,5 @@
-# CSemVer.GitBuild
-Automated Constrained Semantic Versioning for Git repositories
+# CSemVer.Build.Tasks
+Automated Constrained Semantic Versioning for MSBuild projects
 
 ## Build Status
 [![Build status](https://ci.appveyor.com/api/projects/status/nfixkakus282t06u?svg=true)](https://ci.appveyor.com/project/UbiquityDotNet/csemver-gitbuild)
@@ -21,7 +21,7 @@ official releases and CI builds. Including Local developer builds, builds genera
 Request (a.k.a Automated buddy build). CSemVer doesn't explicitly define any format for these cases.
 So this library defines a pattern of versioning that is fully compatible with CSemVer and allows for
 the additional build types in a way that retains precedence having the least surprising consequences.
-In particular, local build packages have a higher precedence that CI or release versions if all other
+In particular, local build packages have a higher precedence than CI or release versions if all other
 components of the version match. This ensures that what you are building includes the dependent packages
 you just built instead of the last one released publicly.
 
@@ -29,11 +29,11 @@ The following is a list of the version formats in descending order of precedence
 
 | Build Type | Format |
 |------------|--------|
-| Local build  | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-ZZZ-{UTCTIME of build } |
-| Pull Request | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID} |
-| Official CI builds | {BuildMajor}.{BuildMinor}.{BuildPatch}--ci-BLD-{UTCTIME of HEAD Commit}+{COMMIT ID} |
-| Official PreRelease | {BuildMajor}.{BuildMinor}.{BuildPatch}-{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{COMMIT ID} |
-| Official Release | {BuildMajor}.{BuildMinor}.{BuildPatch}+{COMMIT ID} |
+| Local build  | `{BuildMajor}.{BuildMinor}.{BuildPatch}--ci-ZZZ-{UTCTIME of build }` |
+| Pull Request | `{BuildMajor}.{BuildMinor}.{BuildPatch}--ci-PRQ-{UTCTIME of PR Commit}+{COMMIT ID}` |
+| Official CI builds | `{BuildMajor}.{BuildMinor}.{BuildPatch}--ci-BLD-{UTCTIME of HEAD Commit}+{COMMIT ID}` |
+| Official PreRelease | `{BuildMajor}.{BuildMinor}.{BuildPatch}-{PreReleaseName}[.PreReleaseNumber][.PreReleaseFix]+{COMMIT ID}` |
+| Official Release | `{BuildMajor}.{BuildMinor}.{BuildPatch}+{COMMIT ID}` |
 
 This library provides a single package to automate the generation of these versions in an easy to use
 NuGet Package.
@@ -56,3 +56,7 @@ signing functions properly to enable loading different versions in the same proc
 The Major, Minor and Patch versions are only updated in the master branch at the time
 of a release. This ensures the concept that SemVer versions define released products. The
 version numbers used are stored in the repository in the BuildVersion.xml
+
+## Building the tasks
+The tasks are pure C# so building the package simply involves simply building the
+src\CSemVer.Build.Tasks.sln

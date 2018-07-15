@@ -9,6 +9,7 @@
             />
 
     <Target Name="GetRepositoryInfo">
+        <!-- Convert a time stamp into a usable CI Build index-->
         <GetBuildIndexFromTime Condition="'$(CiBuildIndex)'==''"
                                TimeStamp="$(BuildTime)"
                                >
@@ -85,7 +86,7 @@
     </Target>
 
     <!-- Generate a C# source file with Assembly and file version attributes and include it in the compilation -->
-    <!-- For legacy projects only, this functionality is built into the new CPS based CSproj files -->
+    <!-- For legacy projects only - for newer projects this functionality is built into the new CPS based CSproj files -->
     <Target Name="GenerateAssemblyVersionInfoCS"
             Condition="'$(MSBuildProjectExtension)'=='.csproj' AND '$(GenerateAssemblyInfo)'==''"
             BeforeTargets="CoreCompile"
