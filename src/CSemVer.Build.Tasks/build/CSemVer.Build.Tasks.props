@@ -13,7 +13,7 @@
         -->
         <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true'">PRQ</CiBuildName>
         <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true'">BLD</CiBuildName>
-        <CiBuildName Condition="'$(CiBuildName)'==''">ZZZ</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsReleaseBuild)'!='true'">ZZZ</CiBuildName>
 
         <TaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' ">netstandard1.6</TaskFolder>
         <TaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net46</TaskFolder>

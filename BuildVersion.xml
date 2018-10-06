@@ -5,6 +5,4 @@ This file is updated on a public release to set the next build that pre-releases
     BuildMajor = "2"
     BuildMinor = "0"
     BuildPatch = "0"
-    PreReleaseName = "beta"
-    PreReleaseNumber = "2"
 />

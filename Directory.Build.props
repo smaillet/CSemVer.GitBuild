@@ -63,7 +63,7 @@
         -->
         <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true'">PRQ</CiBuildName>
         <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true'">BLD</CiBuildName>
-        <CiBuildName Condition="'$(CiBuildName)'==''">ZZZ</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsReleaseBuild)'!='true'">ZZZ</CiBuildName>
     </PropertyGroup>
     <Choose>
         <!-- TODO: Split this out so analyzers and common settings are in a common package for easier sharing amongst repositories and projects -->
