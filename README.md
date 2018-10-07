@@ -102,6 +102,23 @@ the `Directory.Build.props` file:
     </PropertyGroup>
 ```
 
+## BuildVersion.xml
+If the MSBuild property `BuildMajor` is not set, then the base build version is read from the repository file specified in the BuildVersion.xml, typically this is located 
+at the root of a repository so that any child projects share the same versioning information. The location of the file
+is specified by an MSBuild property `BuildVersionXml`. The contents of the file are fairly simple and only requires
+a single `BuildVersionData` element with a set of attributes. The available attributes are:
+
+|Name               |Description|
+|-------------------|-----------|
+| BuildMajor        | Major portion of the build number |
+| BuildMinor        | Minor portion of the build number |
+| BuildPatch        | Patch portion of the build number |
+| PreReleaseName    | PreRelease Name of the CSemVer |
+| PreReleaseNumber  | PreRelease Number of the CSemVer |
+| PreReleaseFix     | PreRelease Fix of the CSemVer |
+
+Only the Major, minor and Patch numbers are required.
+
 ## Building the tasks
 The tasks are pure C# so building the package simply involves building the
 src\CSemVer.Build.Tasks.sln
