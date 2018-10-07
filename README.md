@@ -6,8 +6,7 @@ Automated Constrained Semantic Versioning for MSBuild projects
 
 
 ## Overview
-NUGET Packages use a SemVer 2.0 (see http://semver.org)
-
+Officially, NUGET Packages use a SemVer 2.0 (see http://semver.org).
 However, SemVer 2.0 doesn't consider or account for publicly available CI builds.
 SemVer is only concerned with official releases. This makes CI builds producing 
 versioned packages challenging. Fortunately, someone has already defined a solution
@@ -57,6 +56,52 @@ The Major, Minor and Patch versions are only updated in the master branch at the
 of a release. This ensures the concept that SemVer versions define released products. The
 version numbers used are stored in the repository in the BuildVersion.xml
 
+## Properties used to determine the version
+CSemVer.Build uses MSBuild properties to determine the final version number.
+
+|Name               |Default Value                                                 | Description|
+|-------------------|--------------------------------------------------------------|------------|
+| BuildMajor        | Read from BuildVersion.xml                                   | Major portion of the build number |
+| BuildMinor        | Read from BuildVersion.xml                                   | Minor portion of the build number |
+| BuildPatch        | Read from BuildVersion.xml                                   | Patch portion of the build number |
+| PreReleaseName    | `<Undefined>` or value read from BuildVersion.xml if present | PreRelease Name of the CSemVer |
+| PreReleaseNumber  | `<Undefined>` or value read from BuildVersion.xml if present | PreRelease Number of the CSemVer |
+| PreReleaseFix     | `<Undefined>` or value read from BuildVersion.xml if present | PreRelease Fix of the CSemVer |
+| BuildMeta         | `<undefined>`                                                | Build meta for the version
+| CiBuildName       | `<see notes>`                                                | CSemVer CI name
+| CiBuildIndex      | ISO 8601 formated UTC time-stamp for the build               | Provides a unique build to build value guaranteed to increase with each build
+
+### CiBuildName
+Unless explicitly provided, the CiBuildName is determined by a set of properties that indicate the nature of the
+build. The properties used (in evaluation order) are:
+
+|Name               |Default Value  |CiBuildName    | Description|
+|-------------------|---------------|---------------|------------|
+|IsPullRequestBuild | `<Undefined>` |`PRQ` if true  | Used to indicate if the build is from a pull request |
+|IsAutomatedBuild   | `<Undefined>` |`BLD` if true  | Used to indicate if the build is an automated build |
+|IsReleaseBuild     | `<Undefined>` |`ZZZ` if !true | Used to indicate if the build is an official release build |
+
+These three values are determined by the automated build in some form. These are either explicit variables set for
+the build definition or determined on the fly based on values set by the build. Commonly a `directory.build.props`
+for a repository will specify these. The following is an example for setting them based on an AppVeyor build in
+the `Directory.Build.props` file:
+
+```xml
+    <PropertyGroup>
+        <!-- If running in APPVEYOR it is an automated build -->
+        <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'=='' AND '$(APPVEYOR)'!=''">true</IsAutomatedBuild>
+        <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'==''">false</IsAutomatedBuild>
+
+        <!-- If it has a PR number associated it is a PR build -->
+        <IsPullRequestBuild Condition="'$(IsPullRequestBuild)'=='' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">true</IsPullRequestBuild>
+        <IsPullRequestBuild Condition="'$(IsPullRequestBuild)'==''">false</IsPullRequestBuild>
+
+        <!-- Tags applied to the master branch without a PR are release builds -->
+        <IsReleaseBuild Condition="'$(IsReleaseBuild)'=='' AND '$(APPVEYOR_REPO_TAG)'=='true' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'=='' AND '$(APPVEYOR_BRANCH)'=='master'">true</IsReleaseBuild>
+        <IsReleaseBuild Condition="'$(IsReleaseBuild)'==''">false</IsReleaseBuild>
+    </PropertyGroup>
+```
+
 ## Building the tasks
-The tasks are pure C# so building the package simply involves simply building the
+The tasks are pure C# so building the package simply involves building the
 src\CSemVer.Build.Tasks.sln

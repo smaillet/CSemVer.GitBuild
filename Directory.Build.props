@@ -48,7 +48,6 @@
 
         <IsReleaseBuild Condition="'$(IsReleaseBuild)'=='' AND '$(APPVEYOR_REPO_TAG)'=='true' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'=='' AND '$(APPVEYOR_BRANCH)'=='master'">true</IsReleaseBuild>
         <IsReleaseBuild Condition="'$(IsReleaseBuild)'==''">false</IsReleaseBuild>
-        <BuildVersionXml>$(MSBuildThisFileDirectory)BuildVersion.xml</BuildVersionXml>
         <BuildTime Condition="'$(BuildTime)'=='' AND '$(APPVEYOR_REPO_COMMIT_TIMESTAMP)'!=''">$(APPVEYOR_REPO_COMMIT_TIMESTAMP)</BuildTime>
         <!--
         Force the time-stamp into ISO 8601 format so it is locale neutral

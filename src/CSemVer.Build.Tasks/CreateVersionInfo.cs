@@ -51,15 +51,12 @@ namespace CSemVer.Build.Tasks
         public override bool Execute( )
         {
             PrereleaseVersion preReleaseVersion = null;
-            if( !string.IsNullOrWhiteSpace( CiBuildName ) )
-            {
-                preReleaseVersion = new PrereleaseVersion( PreReleaseName
-                                                         , string.IsNullOrWhiteSpace( PreReleaseNumber ) ? 0 : Convert.ToInt32( PreReleaseNumber )
-                                                         , string.IsNullOrWhiteSpace( PreReleaseFix ) ? 0 : Convert.ToInt32( PreReleaseFix )
-                                                         , CiBuildName
-                                                         , CiBuildIndex
-                                                         );
-            }
+            preReleaseVersion = new PrereleaseVersion( PreReleaseName
+                                                        , string.IsNullOrWhiteSpace( PreReleaseNumber ) ? 0 : Convert.ToInt32( PreReleaseNumber )
+                                                        , string.IsNullOrWhiteSpace( PreReleaseFix ) ? 0 : Convert.ToInt32( PreReleaseFix )
+                                                        , CiBuildName
+                                                        , CiBuildIndex
+                                                        );
 
             var fullVersion = new CSemVer( Convert.ToInt32( BuildMajor )
                                          , Convert.ToInt32( BuildMinor )
