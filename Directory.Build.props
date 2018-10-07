@@ -60,8 +60,8 @@
         ideally a local dev build should have a higher order than any other build (all other elements on
         the left being equal). This ensures that local edit, build, debug cycles are really using what was built.
         -->
-        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true'">PRQ</CiBuildName>
-        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true'">BLD</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true' AND '$(IsReleaseBuild)'!='true'">PRQ</CiBuildName>
+        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true' AND '$(IsReleaseBuild)'!='true'">BLD</CiBuildName>
         <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsReleaseBuild)'!='true'">ZZZ</CiBuildName>
     </PropertyGroup>
     <Choose>
