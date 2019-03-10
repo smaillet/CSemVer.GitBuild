@@ -1,6 +1,9 @@
 # CSemVer.Build.Tasks
 Automated Constrained Semantic Versioning for MSBuild projects
 
+### Nuget
+![Nuget](https://img.shields.io/nuget/dt/CSemVer.Build.Tasks.svg)
+
 ## Build Status
 [![Build status](https://ci.appveyor.com/api/projects/status/nfixkakus282t06u?svg=true)](https://ci.appveyor.com/project/UbiquityDotNet/csemver-gitbuild)
 
