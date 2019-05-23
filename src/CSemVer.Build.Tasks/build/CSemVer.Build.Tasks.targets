@@ -92,15 +92,16 @@
             BeforeTargets="CoreCompile"
             >
         <ItemGroup>
+            <AssemblyVersionInfoGeneratedLine Include="// &lt;auto-generated/&gt;"/>
             <AssemblyVersionInfoGeneratedLine Include="using System.Reflection%3B"/>
-            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyVersion("$(FileVersionMajor).$(FileVersionMinor).$(FileVersionBuild).$(FileVersionRevision)")]'/>
-            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyFileVersion("$(FileVersionMajor).$(FileVersionMinor).$(FileVersionBuild).$(FileVersionRevision)")]'/>
-            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyInformationalVersion("$(FullBuildNumber)")]'/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyVersion("$(FileVersion)")]'/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyFileVersion("$(FileVersion)")]'/>
+            <AssemblyVersionInfoGeneratedLine Include='[assembly: AssemblyInformationalVersion("$(InformationalVersion)")]'/>
         </ItemGroup>
-        <Message Importance="high" Text="Generating: $(IntermediateOutputPath)AssemblyVersionInfo.cs" />
-        <WriteLinesToFile File="$(IntermediateOutputPath)AssemblyVersionInfo.cs" Overwrite="true" Lines="@(AssemblyVersionInfoGeneratedLine)" />
+        <Message Importance='normal' Text="Generating: $(IntermediateOutputPath)AssemblyVersionInfo.g.cs" />
+        <WriteLinesToFile File="$(IntermediateOutputPath)AssemblyVersionInfo.g.cs" Overwrite="true" Lines="@(AssemblyVersionInfoGeneratedLine)" />
         <ItemGroup>
-            <Compile Include="$(IntermediateOutputPath)AssemblyVersionInfo.cs"/>
+            <Compile Include="$(IntermediateOutputPath)AssemblyVersionInfo.g.cs"/>
         </ItemGroup>
     </Target>
 
