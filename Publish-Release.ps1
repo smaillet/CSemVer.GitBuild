@@ -5,7 +5,7 @@ $remoteUrl = git ls-remote --get-url
 
 Write-Information "Remote URL: $remoteUrl"
 
-if($remoteUrl -ine "https://github.com/UbiquityDotNET/CSemVer.GitBuild.NET.git")
+if($remoteUrl -ine "https://github.com/UbiquityDotNET/CSemVer.GitBuild.git")
 {
     throw "Publishing a release tag is only allowed when the origin remote is the official source release current remote is '$remoteUrl'"
 }
