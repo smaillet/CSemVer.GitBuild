@@ -3,7 +3,7 @@
   dog-food the tasks by including them as in-lined tasks from the source to establish versioning for this package.
   This prevents cycles trying to use nuget to reference this package (even as an older version)
   -->
-    <UsingTask TaskName="CreateVersionInfo" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="CreateVersionInfo" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <BuildMajor Required="true" />
             <BuildMinor Required="true" />
@@ -25,7 +25,7 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="GetBuildIndexFromTime" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <TimeStamp ParameterType="System.DateTime" Required="true" />
             <BuildIndex Output="true" />
@@ -35,7 +35,7 @@
         </Task>
     </UsingTask>
 
-    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <UsingTask TaskName="ParseBuildVersionXml" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
         <ParameterGroup>
             <BuildVersionXml Required="true"/>
             <BuildMajor Output="true"/>
@@ -46,10 +46,6 @@
             <PreReleaseFix Output="true"/>
         </ParameterGroup>
         <Task>
-            <Reference Include="System.Xml"/>
-            <Reference Include="System.Xml.Linq"/>
-            <Using Namespace="System"/>
-            <Using Namespace="System.IO"/>
             <Code Type="Class" Source="$(MSBuildProjectDirectory)\ParseBuildVersionXml.cs" />
         </Task>
     </UsingTask>
