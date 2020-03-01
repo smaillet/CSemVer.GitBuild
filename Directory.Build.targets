@@ -21,7 +21,7 @@
             <FileVersionRevision Output="true" />
         </ParameterGroup>
         <Task>
-            <Code Type="Class" Source="$(MSBuildProjectDirectory)\CreateVersionInfo.cs" />
+            <Code Type="Class" Source="$(MSBuildProjectDirectory)\Tasks.cs" />
         </Task>
     </UsingTask>
 
@@ -31,7 +31,7 @@
             <BuildIndex Output="true" />
         </ParameterGroup>
         <Task>
-            <Code Type="Class" Source="$(MSBuildProjectDirectory)\GetBuildIndexFromTime.cs" />
+            <Code Type="Class" Source="$(MSBuildProjectDirectory)\Tasks.cs" />
         </Task>
     </UsingTask>
 
@@ -46,7 +46,7 @@
             <PreReleaseFix Output="true"/>
         </ParameterGroup>
         <Task>
-            <Code Type="Class" Source="$(MSBuildProjectDirectory)\ParseBuildVersionXml.cs" />
+            <Code Type="Class" Source="$(MSBuildProjectDirectory)\Tasks.cs" />
         </Task>
     </UsingTask>
 

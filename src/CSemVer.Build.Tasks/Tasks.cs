@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -8,6 +9,77 @@ using Microsoft.Build.Utilities;
 
 namespace CSemVer.Build.Tasks
 {
+    // The simplest way of selfhosting this code to create the version info for the package that contains it
+    // is through a code task factory based on the source. Unfortunately, that means everything must be in a
+    // single source file, The amount of code is small and the value of direct self-hosting is too great to
+    // warrant establishing some alternate method of taging this package version.
+    #region MSBuild tasks
+    [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
+    public class GetBuildIndexFromTime
+        : Task
+    {
+        [Required]
+        public DateTime TimeStamp { get; set; }
+
+        [Output]
+        public string BuildIndex { get; private set; }
+
+        public override bool Execute( )
+        {
+            BuildIndex = GetBuildIndex( TimeStamp );
+            return true;
+        }
+
+        internal static string GetBuildIndex( DateTime timeStamp )
+        {
+            // establish an increasing build index based on the number of seconds from a common UTC date
+            timeStamp = timeStamp.ToUniversalTime( );
+            var midnightTodayUtc = new DateTime( timeStamp.Year, timeStamp.Month, timeStamp.Day, 0, 0, 0, DateTimeKind.Utc );
+            var baseDate = new DateTime( 2000, 1, 1, 0, 0, 0, DateTimeKind.Utc );
+            uint buildNumber = ( ( uint )( timeStamp - baseDate ).Days ) << 16;
+            buildNumber += ( ushort )( ( timeStamp - midnightTodayUtc ).TotalSeconds / 2 );
+            return buildNumber.ToString( );
+        }
+    }
+
+    [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
+    public class ParseBuildVersionXml
+        : Task
+    {
+        [Required]
+        public string BuildVersionXml { get; set; }
+
+        [Output]
+        public string BuildMajor { get; private set; }
+
+        [Output]
+        public string BuildMinor { get; private set; }
+
+        [Output]
+        public string BuildPatch { get; private set; }
+
+        [Output]
+        public string PreReleaseName { get; private set; }
+
+        [Output]
+        public string PreReleaseNumber { get; private set; }
+
+        [Output]
+        public string PreReleaseFix { get; private set; }
+
+        public override bool Execute( )
+        {
+            var parsedVersion = new ParsedBuildVersionXml(BuildVersionXml);
+            BuildMajor = parsedVersion.BuildMajor.ToString( );
+            BuildMinor = parsedVersion.BuildMinor.ToString( );
+            BuildPatch = parsedVersion.BuildPatch.ToString( );
+            PreReleaseName = parsedVersion.PreReleaseName;
+            PreReleaseNumber = parsedVersion.PreReleaseNumber.ToString( );
+            PreReleaseFix = parsedVersion.PreReleaseFix.ToString( );
+            return true;
+        }
+    }
+
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
     public class CreateVersionInfo
         : Task
@@ -50,13 +122,12 @@ namespace CSemVer.Build.Tasks
 
         public override bool Execute( )
         {
-            PrereleaseVersion preReleaseVersion = null;
-            preReleaseVersion = new PrereleaseVersion( PreReleaseName
-                                                        , string.IsNullOrWhiteSpace( PreReleaseNumber ) ? 0 : Convert.ToInt32( PreReleaseNumber )
-                                                        , string.IsNullOrWhiteSpace( PreReleaseFix ) ? 0 : Convert.ToInt32( PreReleaseFix )
-                                                        , CiBuildName
-                                                        , CiBuildIndex
-                                                        );
+            var preReleaseVersion = new PrereleaseVersion( PreReleaseName
+                                                         , string.IsNullOrWhiteSpace( PreReleaseNumber ) ? 0 : Convert.ToInt32( PreReleaseNumber )
+                                                         , string.IsNullOrWhiteSpace( PreReleaseFix ) ? 0 : Convert.ToInt32( PreReleaseFix )
+                                                         , CiBuildName
+                                                         , CiBuildIndex
+                                                         );
 
             var fullVersion = new CSemVer( Convert.ToInt32( BuildMajor )
                                          , Convert.ToInt32( BuildMinor )
@@ -73,13 +144,75 @@ namespace CSemVer.Build.Tasks
             return true;
         }
     }
+    #endregion
 
-    /// <summary>Marker Attribute to inform CodeAnalysis that a parameter is validated as non-null in a method</summary>
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
-    [AttributeUsage( AttributeTargets.Parameter, Inherited = true, AllowMultiple = false )]
-    internal sealed class ValidatedNotNullAttribute
-        : Attribute
+    public class ParsedBuildVersionXml
     {
+        public ParsedBuildVersionXml( string path )
+        {
+            using( var stream = File.OpenText( path ) )
+            {
+                var xdoc = System.Xml.Linq.XDocument.Load( stream, System.Xml.Linq.LoadOptions.None );
+                var data = xdoc.Element( "BuildVersionData" );
+
+                foreach( var attrib in data.Attributes( ) )
+                {
+                    switch( attrib.Name.LocalName )
+                    {
+                    case "BuildMajor":
+                        BuildMajor = Convert.ToInt32( attrib.Value );
+                        break;
+
+                    case "BuildMinor":
+                        BuildMinor = Convert.ToInt32( attrib.Value );
+                        break;
+
+                    case "BuildPatch":
+                        BuildPatch = Convert.ToInt32( attrib.Value );
+                        break;
+
+                    case "PreReleaseName":
+                        PreReleaseName = attrib.Value;
+                        break;
+
+                    case "PreReleaseNumber":
+                        PreReleaseNumber = Convert.ToInt32( attrib.Value );
+                        break;
+
+                    case "PreReleaseFix":
+                        PreReleaseFix = Convert.ToInt32( attrib.Value );
+                        break;
+
+                    default:
+                        throw new InvalidDataException( $"Unexpected attribute {attrib.Name.LocalName}" );
+                    }
+                }
+
+                // correct malformed values
+                if( string.IsNullOrWhiteSpace( PreReleaseName ) )
+                {
+                    PreReleaseNumber = 0;
+                    PreReleaseFix = 0;
+                }
+
+                if( PreReleaseNumber == 0 )
+                {
+                    PreReleaseFix = 0;
+                }
+            }
+        }
+        public int BuildMajor { get; } = 0;
+
+        public int BuildMinor { get; } = 0;
+
+        public int BuildPatch { get; } = 0;
+
+        public string PreReleaseName { get; } = "";
+
+        public int PreReleaseNumber { get; } = 0;
+
+        public int PreReleaseFix { get; } = 0;
     }
 
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
@@ -226,7 +359,7 @@ namespace CSemVer.Build.Tasks
                 throw new ArgumentOutOfRangeException( "patch" );
             }
 
-            if( buildmeta != null && buildmeta.Length > 20 )
+            if( !string.IsNullOrWhiteSpace(buildmeta) && buildmeta.Length > 20 )
             {
                 throw new ArgumentException( "Build meta size must be less than 20 characters" );
             }
@@ -281,6 +414,26 @@ namespace CSemVer.Build.Tasks
 
                 return retVal;
             }
+        }
+
+        public static CSemVer CreateFrom( string buildVersionXmlPath, DateTime timeStamp, string ciBuildName, string buildMeta )
+        {
+            string ciBuildIndex = GetBuildIndexFromTime.GetBuildIndex(timeStamp);
+            var parsedBuildVersionXml = new ParsedBuildVersionXml( buildVersionXmlPath );
+
+            var preReleaseVersion = new PrereleaseVersion( parsedBuildVersionXml.PreReleaseName
+                                                         , parsedBuildVersionXml.PreReleaseNumber
+                                                         , parsedBuildVersionXml.PreReleaseFix
+                                                         , ciBuildName
+                                                         , ciBuildIndex
+                                                         );
+
+            return new CSemVer( parsedBuildVersionXml.BuildMajor
+                              , parsedBuildVersionXml.BuildMinor
+                              , parsedBuildVersionXml.BuildPatch
+                              , preReleaseVersion
+                              , buildMeta
+                              );
         }
 
         private static Version MakeVersion( ulong value )
