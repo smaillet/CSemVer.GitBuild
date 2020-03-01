@@ -83,7 +83,7 @@ namespace CSemVer.Build.Tasks
     }
 
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
-    internal class PrereleaseVersion
+    public class PrereleaseVersion
     {
         public PrereleaseVersion( string preRelName, int preRelNumber, int preRelFix, string ciBuildName, string ciBuildIndex )
         {
@@ -192,7 +192,7 @@ namespace CSemVer.Build.Tasks
     }
 
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
-    internal class CSemVer
+    public class CSemVer
     {
         public int Major { get; private set; }
 
