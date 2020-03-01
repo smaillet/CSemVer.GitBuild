@@ -106,7 +106,10 @@ namespace CSemVer.Build.Tasks
         public string BuildMeta { get; set; }
 
         [Output]
-        public string SemVer { get; set; }
+        public string CSemVer { get; set; }
+
+        [Output]
+        public string ShortCSemVer { get; set; }
 
         [Output]
         public ushort FileVersionMajor { get; set; }
@@ -136,7 +139,8 @@ namespace CSemVer.Build.Tasks
                                          , BuildMeta
                                          );
 
-            SemVer = fullVersion.ToString( );
+            CSemVer = fullVersion.ToString( );
+            ShortCSemVer = fullVersion.ToString( false, true );
             FileVersionMajor = ( ushort )fullVersion.FileVersion.Major;
             FileVersionMinor = ( ushort )fullVersion.FileVersion.Minor;
             FileVersionBuild = ( ushort )fullVersion.FileVersion.Build;
@@ -195,11 +199,6 @@ namespace CSemVer.Build.Tasks
                     PreReleaseNumber = 0;
                     PreReleaseFix = 0;
                 }
-
-                if( PreReleaseNumber == 0 )
-                {
-                    PreReleaseFix = 0;
-                }
             }
         }
         public int BuildMajor { get; } = 0;
@@ -227,29 +226,29 @@ namespace CSemVer.Build.Tasks
                         select name;
 
                 var nameIndex = q.FirstOrDefault( );
-                PreReleaseNameIndex = nameIndex.Name == null ? -1 : nameIndex.Index;
+                Index = nameIndex.Name == null ? -1 : nameIndex.Index;
 
-                if( PreReleaseNameIndex < 0 || PreReleaseNameIndex > 7 )
+                if( Index < 0 || Index > 7 )
                 {
                     throw new ArgumentException( "Expected value in range [0-7]", "preRelName" );
                 }
 
-                PreReleaseNumber = preRelNumber;
-                PreReleaseFix = preRelFix;
+                Number = preRelNumber;
+                Fix = preRelFix;
 
-                if( PreReleaseNumber < 0 || PreReleaseNumber > 99 )
+                if( Number < 0 || Number > 99 )
                 {
-                    throw new ArgumentOutOfRangeException( "preRelNumber", PreReleaseNumber, "Expected value in range [0-99]" );
+                    throw new ArgumentOutOfRangeException( "preRelNumber", Number, "Expected value in range [0-99]" );
                 }
 
-                if( PreReleaseFix < 0 || PreReleaseFix > 99 )
+                if( Fix < 0 || Fix > 99 )
                 {
-                    throw new ArgumentOutOfRangeException( "preRelFix", PreReleaseFix, "Expected value in range [0-99]" );
+                    throw new ArgumentOutOfRangeException( "preRelFix", Fix, "Expected value in range [0-99]" );
                 }
             }
             else
             {
-                PreReleaseNameIndex = -1;
+                Index = -1;
             }
 
             if( !string.IsNullOrEmpty( ciBuildName ) && !CiBuildIdRegEx.IsMatch( ciBuildName ) )
@@ -271,42 +270,41 @@ namespace CSemVer.Build.Tasks
             CiBuildIndex = ciBuildIndex;
         }
 
-        [SuppressMessage( "", "IDE0025", Justification = "Inline task compiler doesn't support expression bodies" )]
-        public string PreReleaseName
-        {
-            get
-            {
-                return PreReleaseNameIndex >= 0 ? PreReleaseNames[ PreReleaseNameIndex ] : null;
-            }
-        }
+        public string Name => Index >= 0 ? PreReleaseNames[ Index ] : null;
 
-        public int PreReleaseNameIndex { get; private set; }
+        public string ShortName => Index >= 0 ? PreReleaseShortNames[ Index ] : null;
 
-        public int PreReleaseNumber { get; private set; }
+        public int Index { get; private set; }
 
-        public int PreReleaseFix { get; private set; }
+        public int Number { get; private set; }
+
+        public int Fix { get; private set; }
 
         public string CiBuildName { get; set; }
 
         public string CiBuildIndex { get; set; }
 
-        public override string ToString( )
+        public override string ToString( ) => ToString( false );
+
+        [SuppressMessage( "Style", "IDE0058:Expression value is never used", Justification = "Fluent API returns self" )]
+        public string ToString( bool useShortForm )
         {
             bool hasCIBuild = !string.IsNullOrEmpty( CiBuildName );
-            bool hasPreRel = PreReleaseNameIndex >= 0;
+            bool hasPreRel = Index >= 0;
             var bldr = new StringBuilder();
 
             if( hasPreRel )
             {
-                bldr.Append( '-' );
-                bldr.Append( PreReleaseName );
+                bldr.Append( '-' )
+                    .Append( useShortForm ? ShortName : Name );
 
-                if( PreReleaseNumber > 0 || hasCIBuild )
+                string delimFormat = useShortForm ? "-{0:D02}" : ".{0}";
+                if( Number > 0 || hasCIBuild )
                 {
-                    bldr.AppendFormat( ".{0}", PreReleaseNumber );
-                    if( PreReleaseFix > 0 || hasCIBuild )
+                    bldr.AppendFormat( delimFormat, Number );
+                    if( Fix > 0 || hasCIBuild )
                     {
-                        bldr.AppendFormat( ".{0}", PreReleaseFix );
+                        bldr.AppendFormat( delimFormat, Fix );
                     }
                 }
             }
@@ -314,7 +312,7 @@ namespace CSemVer.Build.Tasks
             if( hasCIBuild )
             {
                 bldr.Append( hasPreRel ? "." : "--" );
-                bldr.AppendFormat( "ci-{0}.{1}", CiBuildName, CiBuildIndex );
+                bldr.AppendFormat( "ci.{0}.{1}", CiBuildIndex, CiBuildName );
             }
 
             return bldr.ToString( );
@@ -322,6 +320,7 @@ namespace CSemVer.Build.Tasks
 
         private static readonly Regex CiBuildIdRegEx = new Regex(@"[a-zA-z0-9\-]+");
         private static readonly string[] PreReleaseNames = { "alpha", "beta", "delta", "epsilon", "gamma", "kappa", "prerelease", "rc" };
+        private static readonly string[] PreReleaseShortNames = { "a", "b", "d", "e", "g", "k", "p", "r" };
     }
 
     [SuppressMessage( "", "SA1402", Justification = "MSBuild requires a single file for inline tasks" )]
@@ -359,7 +358,7 @@ namespace CSemVer.Build.Tasks
                 throw new ArgumentOutOfRangeException( "patch" );
             }
 
-            if( !string.IsNullOrWhiteSpace(buildmeta) && buildmeta.Length > 20 )
+            if( !string.IsNullOrWhiteSpace( buildmeta ) && buildmeta.Length > 20 )
             {
                 throw new ArgumentException( "Build meta size must be less than 20 characters" );
             }
@@ -371,17 +370,24 @@ namespace CSemVer.Build.Tasks
             BuildMetadata = buildmeta;
         }
 
-        public override string ToString( )
+        public override string ToString( ) => ToString( true, false );
+
+        [SuppressMessage( "Style", "IDE0058:Expression value is never used", Justification = "Fluent API returns self" )]
+        public string ToString( bool includeMetadata, bool useShortNames )
         {
             var bldr = new System.Text.StringBuilder( );
+            if(!useShortNames)
+            {
+                bldr.Append( 'v' );
+            }
             bldr.AppendFormat( "{0}.{1}.{2}", Major, Minor, Patch );
 
             if( PrereleaseVersion != null )
             {
-                bldr.Append( PrereleaseVersion.ToString( ) );
+                bldr.Append( PrereleaseVersion.ToString( useShortNames ) );
             }
 
-            if( BuildMetadata != null )
+            if( BuildMetadata != null && includeMetadata )
             {
                 bldr.AppendFormat( "+{0}", BuildMetadata );
             }
@@ -404,12 +410,12 @@ namespace CSemVer.Build.Tasks
             {
                 ulong retVal = ( ( ulong )Major * MulMajor ) + ( ( ulong )Minor * MulMinor ) + ( ( ( ulong )Patch + 1 ) * MulPatch );
 
-                if( PrereleaseVersion != null && PrereleaseVersion.PreReleaseNameIndex > 0 )
+                if( PrereleaseVersion != null && PrereleaseVersion.Index > 0 )
                 {
                     retVal -= MulPatch - 1;
-                    retVal += ( ulong )PrereleaseVersion.PreReleaseNameIndex * MulName;
-                    retVal += ( ulong )PrereleaseVersion.PreReleaseNumber * MulNum;
-                    retVal += ( ulong )PrereleaseVersion.PreReleaseFix;
+                    retVal += ( ulong )PrereleaseVersion.Index * MulName;
+                    retVal += ( ulong )PrereleaseVersion.Number * MulNum;
+                    retVal += ( ulong )PrereleaseVersion.Fix;
                 }
 
                 return retVal;

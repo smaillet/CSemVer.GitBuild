@@ -39,12 +39,12 @@
                            CiBuildIndex = "$(CiBuildIndex)"
                            BuildMeta = "$(BuildMeta)"
                            >
-            <Output TaskParameter="SemVer" PropertyName="FullBuildNumber" />
+            <Output TaskParameter="CSemVer" PropertyName="FullBuildNumber" />
             <Output TaskParameter="FileVersionMajor" PropertyName="FileVersionMajor" />
             <Output TaskParameter="FileVersionMinor" PropertyName="FileVersionMinor" />
             <Output TaskParameter="FileVersionBuild" PropertyName="FileVersionBuild" />
             <Output TaskParameter="FileVersionRevision" PropertyName="FileVersionRevision" />
-            <Output TaskParameter="SemVer" PropertyName="PackageVersion"/>
+            <Output TaskParameter="ShortCSemVer" PropertyName="PackageVersion"/>
         </CreateVersionInfo>
     </Target>
 

@@ -14,7 +14,8 @@
             <PreReleaseNumber />
             <PreReleaseFix />
             <BuildMeta />
-            <SemVer Output="true" />
+            <CSemVer Output="true" />
+            <ShortCSemVer Output="true" />
             <FileVersionMajor Output="true" />
             <FileVersionMinor Output="true" />
             <FileVersionBuild Output="true" />

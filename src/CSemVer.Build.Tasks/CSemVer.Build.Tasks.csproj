@@ -3,19 +3,20 @@
     <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <PackageId>CSemVer.Build.Tasks</PackageId>
     <Authors>UbiquityDotNET</Authors>
-    <Copyright>Copyright (C) 2017, Ubiquity.NET Contributors</Copyright>
-    <Title>CSemver Build version generator for a build</Title>
+    <Copyright>Copyright (C) 2017-2020, Ubiquity.NET Contributors</Copyright>
+    <Title>CSemVer Build version generator for a build</Title>
     <Description>Automatic build versioning with support for consistent build versioning across developers builds, CI builds and official release builds.</Description>
     <LicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</LicenseUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <NoCommonAnalyzers>true</NoCommonAnalyzers>
     <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
-    <PackageLicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</PackageProjectUrl>
     <RepositoryUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>CSemVer;CI;SemVer</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
