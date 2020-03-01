@@ -29,6 +29,6 @@ if(![string]::IsNullOrWhiteSpace($buildVersionData.PreReleaseName))
     }
 }
 
-$tagName = "v.$($buildVersionData.BuildMajor).$($buildVersionData.BuildMinor).$($buildVersionData.BuildPatch)$preReleaseSuffix"
+$tagName = "v$($buildVersionData.BuildMajor).$($buildVersionData.BuildMinor).$($buildVersionData.BuildPatch)$preReleaseSuffix"
 git tag -a $tagname -m "Official release: $tagname"
 git push origin $tagname
