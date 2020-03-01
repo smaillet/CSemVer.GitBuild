@@ -23,6 +23,11 @@ jobs:
            fetch-depth: 0
 
       - name: Build Source
+        env:
+            IsAutomatedBuild: true
+            IsReleaseBuild: false
+            IsPullRequestBuild: true
+
         run: dotnet build src/CSemVer.Build.Tasks.sln
 
       - name: Publish Artifacts

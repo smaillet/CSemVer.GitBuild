@@ -15,6 +15,11 @@ jobs:
           fetch-depth: 0
 
       - name: Build Source
+        env:
+            IsAutomatedBuild: true
+            IsReleaseBuild: true
+            IsPullRequestBuild: false
+
         run: dotnet build src/CSemVer.Build.Tasks.sln
 
       - name: Create Release
