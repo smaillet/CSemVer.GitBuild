@@ -1,4 +1,5 @@
 <Project>
+    <Import Project="$(MSBuildThisFileDirectory)src\CSemVer.Build.Tasks\build\CSemVer.Build.Tasks.props"/>
     <!--
     Description:
         This property file is imported by the projects in this repository to set global locations
@@ -14,15 +15,15 @@
         other projects that might want to set the build outputs etc... into a different place.
     -->
     <PropertyGroup>
-        <!-- Default to x86/Win32 | Debug build if not otherwise specified -->
+        <!-- Default to x64/AnyCPU | Release build if not otherwise specified -->
         <Platform Condition="'$(Platform)'=='' AND '$(MSBuildProjectExtension)'!='.vcxproj'">AnyCPU</Platform>
-        <Platform Condition="'$(Platform)'=='' AND '$(MSBuildProjectExtension)'=='.vcxproj'">Win32</Platform>
+        <Platform Condition="'$(Platform)'=='' AND '$(MSBuildProjectExtension)'=='.vcxproj'">x64</Platform>
         <Platform Condition="$(Platform)=='x86' AND '$(MSBuildProjectExtension)'=='.vcxproj'">Win32</Platform>
         <UnifiedPlatformPathName Condition="'$(UnifiedPlatformPathName)'==''">$(Platform)</UnifiedPlatformPathName>
         <UnifiedPlatformPathName Condition="'$(UnifiedPlatformPathName)'=='Win32'">x86</UnifiedPlatformPathName>
-        <UnifiedPlatformPathName Condition="'$(UnifiedPlatformPathName)'=='AnyCPU'">x86</UnifiedPlatformPathName>
+        <UnifiedPlatformPathName Condition="'$(UnifiedPlatformPathName)'=='AnyCPU'">x64</UnifiedPlatformPathName>
 
-        <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+        <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
 
         <!-- Use the location of this file (at the top of the build tree) to define the root directory, if not already set -->
         <BuildRootDir Condition="'$(BuildRootDir)'==''">$(MSBuildThisFileDirectory)</BuildRootDir>
@@ -40,48 +41,26 @@
         <BuildOutputPackagesDir Condition="'$(BuildOutputPackagesDir)'==''">$(BaseBuildOutputPath)packages\</BuildOutputPackagesDir>
 
         <BuildVersionXml Condition="'$(BuildVersionXmlFile)'==''">$(MSBuildThisFileDirectory)BuildVersion.xml</BuildVersionXml>
-        <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'=='' AND '$(APPVEYOR)'!=''">true</IsAutomatedBuild>
         <IsAutomatedBuild Condition="'$(IsAutomatedBuild)'==''">false</IsAutomatedBuild>
-
-        <IsPullRequestBuild Condition="'$(IsPullRequestBuild)'=='' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'!=''">true</IsPullRequestBuild>
         <IsPullRequestBuild Condition="'$(IsPullRequestBuild)'==''">false</IsPullRequestBuild>
-
-        <IsReleaseBuild Condition="'$(IsReleaseBuild)'=='' AND '$(APPVEYOR_REPO_TAG)'=='true' AND '$(APPVEYOR_PULL_REQUEST_NUMBER)'==''">true</IsReleaseBuild>
         <IsReleaseBuild Condition="'$(IsReleaseBuild)'==''">false</IsReleaseBuild>
         <BuildTime Condition="'$(BuildTime)'=='' AND '$(APPVEYOR_REPO_COMMIT_TIMESTAMP)'!=''">$(APPVEYOR_REPO_COMMIT_TIMESTAMP)</BuildTime>
         <!--
-        Force the time-stamp into ISO 8601 format so it is locale neutral
-        Furthermore UTC is used to ensure consistency of the stamp across
-        various geopolitical time zones.
+        Prevent importing of tasks that don't yet exist in this build, while still leveraging the rest of the infrastructure.
+        The build MUST set FullBuildNumber property for this to work.
         -->
-        <BuildTime Condition="'$(BuildTime)'==''">$([System.DateTime]::UtcNow.ToString("o"))</BuildTime>
-        <!--
-        While these names can be overridden it is important to keep in mind the sort ordering,
-        ideally a local dev build should have a higher order than any other build (all other elements on
-        the left being equal). This ensures that local edit, build, debug cycles are really using what was built.
-        -->
-        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsPullRequestBuild)'=='true' AND '$(IsReleaseBuild)'!='true'">PRQ</CiBuildName>
-        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsAutomatedBuild)'=='true' AND '$(IsReleaseBuild)'!='true'">BLD</CiBuildName>
-        <CiBuildName Condition="'$(CiBuildName)'=='' AND '$(IsReleaseBuild)'!='true'">ZZZ</CiBuildName>
+        <BuildingCSemVerBuildTask>true</BuildingCSemVerBuildTask>
     </PropertyGroup>
     <Choose>
-        <!-- TODO: Split this out so analyzers and common settings are in a common package for easier sharing amongst repositories and projects -->
         <!-- Apply standard analyzers and rule sets for all C# projects -->
-        <When Condition="'$(MSBuildProjectExtension)'=='.csproj'">
+        <When Condition="'$(MSBuildProjectExtension)'=='.csproj' and '$(DisableDirProps)'!='true'">
             <PropertyGroup>
                 <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Ubiquity.NET.ruleset</CodeAnalysisRuleSet>
+                <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
                 <Determenistic>true</Determenistic>
-                <IsTestProject>$(MSBuildProjectName.Contains('Test'))</IsTestProject>
             </PropertyGroup>
-            <ItemGroup Condition="'$(NoCommonAnalyzers)'!='true' and '$(IsTestProject)' != 'true' and '$(SourceLinkEnabled)' != 'false'">
-                <PackageReference Include="SourceLink.Create.CommandLine" Version="2.1.0" PrivateAssets="All" />
-            </ItemGroup>
             <ItemGroup Condition="'$(NoCommonAnalyzers)'!='true'">
-                <PackageReference Include="Microsoft.AnalyzerPowerPack" Version="1.1.0" PrivateAssets="All" />
-                <PackageReference Include="RefactoringEssentials" Version="5.2.0" PrivateAssets="All" />
-                <PackageReference Include="StyleCop.Analyzers" Version="1.0.2" PrivateAssets="All" />
-            </ItemGroup>
-            <ItemGroup>
+                <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
                 <None Include="$(MSBuildThisFileDirectory)Ubiquity.NET.ruleset" Link="Ubiquity.NET.ruleset" />
             </ItemGroup>
         </When>
