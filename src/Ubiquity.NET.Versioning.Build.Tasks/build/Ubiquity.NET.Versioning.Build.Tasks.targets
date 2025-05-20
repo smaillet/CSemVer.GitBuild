@@ -1,7 +1,7 @@
 ﻿<Project>
-    <UsingTask TaskName="CreateVersionInfo" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
-    <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
-    <UsingTask TaskName="ParseBuildVersionXml" AssemblyFile="$(CSemVerBuildTaskAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
+    <UsingTask TaskName="CreateVersionInfo" AssemblyFile="$(UbiquityDotNetVersioningBuildTasksAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
+    <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(UbiquityDotNetVersioningBuildTasksAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
+    <UsingTask TaskName="ParseBuildVersionXml" AssemblyFile="$(UbiquityDotNetVersioningBuildTasksAssembly)" Condition="'$(BuildingCSemVerBuildTask)'!='true'"/>
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;_IntermediatePack"
@@ -106,8 +106,8 @@
     </Target>
 
     <Target Name="ShowBuildParams" BeforeTargets="Build;Pack">
-        <Message Text="FullBuildNumber: $(FullBuildNumber)"/>
-        <Message Text=" PackageVersion: $(PackageVersion)"/>
-        <Message Text="    FileVersion: $(FileVersion)"/>
+        <Message Importance="High" Text="FullBuildNumber: $(FullBuildNumber)"/>
+        <Message Importance="High" Text=" PackageVersion: $(PackageVersion)"/>
+        <Message Importance="High" Text="    FileVersion: $(FileVersion)"/>
     </Target>
 </Project>

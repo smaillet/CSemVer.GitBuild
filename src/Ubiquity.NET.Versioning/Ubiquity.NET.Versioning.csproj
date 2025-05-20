@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <!-- Consumed by MSBuild Task in VS which only builds on .NET Framework -->
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <PackageId>Ubiquity.NET.Versioning</PackageId>
+        <Authors>UbiquityDotNET</Authors>
+        <Copyright>Copyright (C) 2017-2020, Ubiquity.NET Contributors</Copyright>
+        <Title>Build versioning library</Title>
+        <Description>Provides common build versioning types and support, normally used in an Automatic build versioning system.</Description>
+        <LicenseUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild/blob/master/LICENSE</LicenseUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageProjectUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/UbiquityDotNET/CSemVer.GitBuild</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <PackageTags>Version;CSemVer;CI;SemVer</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
+        <LangVersion>13</LangVersion>
+    </PropertyGroup>
+    <!--
+    For local builds of this project in IDE, FORCE the BuildInfo as there is no lib to rely on; (This repo builds it!)
+    Automated builds/Command line builds use the PowerShell scripts to setup the variables for use in the build. This,
+    handles the case of builds directly from the IDE so that can complete a compilation. [Though, it should ONLY be
+    used for local testing. Running the scripts locally from a command line is the final best test of a given set of
+    changes to the source]
+    -->
+    <PropertyGroup Condition="'$(IsAutomatedBuild)' != 'true' AND '$(CiBuildIndex)'==''">
+        <CiBuildIndex>$([System.UInt32]::MaxValue)</CiBuildIndex>
+        <CiBuildName>IDE</CiBuildName>
+        <BuildMajor>4</BuildMajor>
+        <BuildMinor>0</BuildMinor>
+        <BuildPatch>0</BuildPatch>
+        <PreReleaseName>alpha</PreReleaseName>
+        <PreReleaseNumber>0</PreReleaseNumber>
+        <PreReleaseFix>0</PreReleaseFix>
+        <!-- File Version for v4.0.0.alpha (See: https://csemver.org/playground/site/#/) -->
+        <FileVersionMajor>1</FileVersionMajor>
+        <FileVersionMinor>8970</FileVersionMinor>
+        <FileVersionBuild>48319</FileVersionBuild>
+        <FileVersionRevision>10242</FileVersionRevision>
+        <FullBuildNumber>$(BuildMajor).$(BuildMinor).$(BuildPatch)-$(PreReleaseName).ci-ZZZ.$(CiBuildIndex)</FullBuildNumber>
+        <PackageVersion>$(BuildMajor).$(BuildMinor).$(BuildPatch)-a.ci-ZZZ.$(CiBuildIndex)</PackageVersion>
+    </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Bcl.HashCode" />
+      <PackageReference Include="Polyfill">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="ReadMe.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+</Project>

@@ -1,8 +1,17 @@
-# Repository neutral common build support utilities
-# This library is intended for use across multiple repositories
-# and therefore, should only contain functionality that is independent
-# of the particulars of any given repository.
+<#
+.SYNOPSIS
+    Repository neutral common build support utilities
 
+.DESCRIPTION
+    This library is intended for use across multiple repositories
+    and therefore, should only contain functionality that is independent
+    of the particulars of any given repository.
+#>
+
+<#
+.SYNOPSIS
+    Ensures a path exists on disk (Silently, Creates it if it doesn't exist)
+#>
 function Ensure-PathExists
 {
     param([Parameter(Mandatory=$true, ValueFromPipeLine)]$path)
@@ -774,7 +783,6 @@ function Initialize-CommonBuildEnvironment
     | CiBuildName         | Name of the build for Constrained Semantic Version construction |
     | BuildTime           | ISO-8601 formatted time stamp for the build (local builds are based on current time, automated builds use the time from the HEAD commit)
 #>
-    # support common parameters
     [cmdletbinding()]
     Param([switch]$FullInit,
           [switch]$AllowVsPreReleases,

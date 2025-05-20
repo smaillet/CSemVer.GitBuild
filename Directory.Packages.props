@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Global references are included in ALL projects in this repository
+  -->
+  <ItemGroup>
+    <!--
+        While some aspects of this analyzer are helpful, it hasn't been without issues. Worse, the last non-preview release
+        was Apr of 2019, That's a LONG time ago. Even the most recent preview (beta) was back in Dec. of 2023. So not much
+        sign of life/activity nor hope of updates to bug fixes. It's sad to see this go as relying on a developer/reviewers
+        to follow the rules is a recipe for failures. Automation is how that works. (With occasional overrides that should
+        get the attention of a reviewer).
+        -->
+    <!--<GlobalPackageReference Include="StyleCop.Analyzers" Version="1.1.118" Condition="'$(NoCommonAnalyzers)' != 'true'" />-->
+  </ItemGroup>
+  <!--
+    Package versions made consistent across all packages referenced in this repository
+   -->
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
+    <PackageVersion Include="Microsoft.Build.Framework" Version="17.14.8" />
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="17.14.8" />
+    <!-- Tests all use the same framework versions -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
+    <PackageVersion Include="Polyfill" Version="7.31.0" />
+  </ItemGroup>
+</Project>
