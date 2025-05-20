@@ -3,9 +3,7 @@
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
-using Ubiquity.NET.CSemVer;
-
-namespace CSemVer.Build.Tasks
+namespace Ubiquity.NET.Versioning.Tasks
 {
     public class GetBuildIndexFromTime
         : Task
@@ -14,11 +12,11 @@ namespace CSemVer.Build.Tasks
         public DateTime TimeStamp { get; set; }
 
         [Output]
-        public string BuildIndex { get; private set; }
+        public string? BuildIndex { get; private set; }
 
         public override bool Execute( )
         {
-            BuildIndex = TimeStamp.ToBuildIndex();
+            BuildIndex = new DateTimeOffset(TimeStamp.ToUniversalTime()).ToBuildIndex();
             return true;
         }
     }

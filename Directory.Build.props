@@ -1,5 +1,5 @@
 <Project>
-    <Import Project="$(MSBuildThisFileDirectory)src\CSemVer.Build.Tasks\build\CSemVer.Build.Tasks.props"/>
+    <Import Project="$(MSBuildThisFileDirectory)src\Ubiquity.NET.Versioning.Build.Tasks\build\Ubiquity.NET.Versioning.Build.Tasks.props"/>
     <!--
     Description:
         This property file is imported by the projects in this repository to set global locations
@@ -35,7 +35,8 @@
 
         <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''" >$([MSBuild]::NormalizeDirectory("$(BaseBuildOutputPath)", "Intermediate", "$(MSBuildProjectName)"))</BaseIntermediateOutputPath>
         <IntDir Condition="'$(IntDir)'==''">$([MSBuild]::NormalizeDirectory("$(BaseIntermediateOutputPath)", "$(UnifiedPlatformPathName)", "$(Configuration)"))</IntDir>
-        <BaseOutputPath Condition="'$(BaseOutputPath)'==''">$([MSBuild]::NormalizeDirectory("$(BaseBuildOutputPath)","bin", "$(MSBuildProjectName)"))</BaseOutputPath>
+        <BaseBuildOutputBinPath Condition="'$(BaseBuildOutputBinPath)'==''">$([MSBuild]::NormalizeDirectory("$(BaseBuildOutputPath)", "bin"))</BaseBuildOutputBinPath>
+        <BaseOutputPath Condition="'$(BaseOutputPath)'==''">$([MSBuild]::NormalizeDirectory("$(BaseBuildOutputBinPath)", "$(MSBuildProjectName)"))</BaseOutputPath>
         <PackageOutputPath Condition="'$(PackageOutputPath)'==''">$([MSBuild]::NormalizeDirectory("$(BaseBuildOutputPath)","NuGet"))</PackageOutputPath>
 
         <BuildOutputPackagesDir Condition="'$(BuildOutputPackagesDir)'==''">$(BaseBuildOutputPath)packages\</BuildOutputPackagesDir>
@@ -52,17 +53,24 @@
         <BuildingCSemVerBuildTask>true</BuildingCSemVerBuildTask>
     </PropertyGroup>
     <Choose>
-        <!-- Apply standard analyzers and rule sets for all C# projects -->
+        <!-- Apply standard properties for all C# projects -->
         <When Condition="'$(MSBuildProjectExtension)'=='.csproj' and '$(DisableDirProps)'!='true'">
             <PropertyGroup>
-                <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Ubiquity.NET.ruleset</CodeAnalysisRuleSet>
                 <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
                 <Determenistic>true</Determenistic>
+                <Nullable>enable</Nullable>
+                <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+                <EnableNETAnalyzers>true</EnableNETAnalyzers>
+                <!--
+                DO NOT ALLOW Implicit using msbuild feature - EVIL; causes mass issues and frustration moving code between projects when one doesn't
+                support it or uses a different framework version. Not to mention hiding the actual namespaces involved, making resolving conflicts HARDER.
+                -->
+                <ImplicitUsings>disable</ImplicitUsings>
+                <!-- NOTE: Top-Level statements blocked as an error in .editorconfig and ImplicitUsings 'feature' VERIFIED in the targets file -->
             </PropertyGroup>
-            <ItemGroup Condition="'$(NoCommonAnalyzers)'!='true'">
+            <!--<ItemGroup Condition="'$(NoCommonAnalyzers)'!='true'">
                 <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
-                <None Include="$(MSBuildThisFileDirectory)Ubiquity.NET.ruleset" Link="Ubiquity.NET.ruleset" />
-            </ItemGroup>
+            </ItemGroup>-->
         </When>
         <When Condition="'$(MSBuildProjectExtension)'=='.vcxproj'">
             <!-- vcxproj uses a different pattern for output paths -->

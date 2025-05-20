@@ -81,7 +81,7 @@ function Initialize-BuildEnvironment
         # use common repo-neutral function to perform most of the initialization
         $buildInfo = Initialize-CommonBuildEnvironment -FullInit:$FullInit -AllowVsPreReleases:$AllowVsPreReleases
         $buildInfo['OfficialGitRemoteUrl'] = 'https://github.com/UbiquityDotNET/Argument.Validators.git'
-        
+
         $verInfo = Get-ParsedBuildVersionXML -BuildInfo $buildInfo
         $verInfo['CiBuildIndex'] = ConvertTo-BuildIndex $buildInfo['BuildTime']
         $verInfo['CiBuildName'] = $buildInfo['CiBuildName']

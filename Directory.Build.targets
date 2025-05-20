@@ -1,3 +1,3 @@
 <Project>
-    <Import Project="$(MSBuildThisFileDirectory)src\CSemVer.Build.Tasks\build\CSemVer.Build.Tasks.targets"/>
+    <Import Project="$(MSBuildThisFileDirectory)src\Ubiquity.NET.Versioning.Build.Tasks\build\Ubiquity.NET.Versioning.Build.Tasks.targets"/>
 </Project>
