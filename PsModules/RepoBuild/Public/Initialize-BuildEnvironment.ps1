@@ -66,7 +66,7 @@ class PrereleaseVersion
         {
             $bldr.Append('-').Append($useShortForm ? $this.ShortName : $this.Name)
             $delimFormat = $useShortForm ? '-{0:D02}' : '.{0}'
-            if(($this.Number -gt 0))
+            if(($this.Number -gt 0 -or $this.Fix -gt 0))
             {
                 $bldr.AppendFormat($delimFormat, $this.Number)
                 if(($this.Fix -gt 0))
