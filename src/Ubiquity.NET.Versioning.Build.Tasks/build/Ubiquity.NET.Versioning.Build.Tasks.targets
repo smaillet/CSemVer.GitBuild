@@ -19,6 +19,7 @@
     <UsingTask TaskName="CreateVersionInfo" AssemblyFile="$(_Ubiquity_NET_Versioning_Build_Tasks)"/>
     <UsingTask TaskName="GetBuildIndexFromTime" AssemblyFile="$(_Ubiquity_NET_Versioning_Build_Tasks)"/>
     <UsingTask TaskName="ParseBuildVersionXml" AssemblyFile="$(_Ubiquity_NET_Versioning_Build_Tasks)"/>
+    <UsingTask TaskName="GenerateHeader" AssemblyFile="$(_Ubiquity_NET_Versioning_Build_Tasks)"/>
 
     <Target Name="PrepareVersioningForBuild"
             BeforeTargets="PrepareForBuild;_IntermediatePack"
@@ -94,21 +95,16 @@
             Condition="'$(MSBuildProjectExtension)'=='.vcxproj' AND '$(GeneratedVersionInfoHeader)'!=''"
             BeforeTargets="ClCompile"
             >
-        <ItemGroup>
-            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MAJOR $(FileVersionMajor)'/>
-            <VersionInfoGeneratedLine Include='#define FILE_VERSION_MINOR $(FileVersionMinor)'/>
-            <VersionInfoGeneratedLine Include='#define FILE_VERSION_BUILD $(FileVersionBuild)'/>
-            <VersionInfoGeneratedLine Include='#define FILE_VERSION_REVISION $(FileVersionRevision)'/>
-            <VersionInfoGeneratedLine Include='#define FILE_VERSION_STRING "$(FileVersion)"'/>
-            <VersionInfoGeneratedLine Include=' '/>
-            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MAJOR $(FileVersionMajor)'/>
-            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_MINOR $(FileVersionMinor)'/>
-            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_BUILD $(FileVersionBuild)'/>
-            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_REVISION $(FileVersionRevision)'/>
-            <VersionInfoGeneratedLine Include='#define PRODUCT_VERSION_STRING "$(FileVersion)"'/>
-        </ItemGroup>
         <Message Importance="high" Text="Generating $(GeneratedVersionInfoHeader)" />
-        <WriteLinesToFile File="$(IntermediateOutputPath)$(GeneratedVersionInfoHeader)" Overwrite="true" Lines="@(VersionInfoGeneratedLine)" />
+        <GenerateHeader
+            FileVersionMajor="$(FileVersionMajor)"
+            FileVersionMinor="$(FileVersionMinor)"
+            FileVersionBuild="$(FileVersionBuild)"
+            FileVersionRevision="$(FileVersionRevision)"
+            FileVersion="$(FileVersion)"
+            FullBuildNumber="$(FullBuildNumber)"
+            GeneratedHeaderFilePath="$(IntermediateOutputPath)$(GeneratedVersionInfoHeader)"
+            />
     </Target>
 
     <!-- Generate a C# source file with Assembly and file version attributes and include it in the compilation -->

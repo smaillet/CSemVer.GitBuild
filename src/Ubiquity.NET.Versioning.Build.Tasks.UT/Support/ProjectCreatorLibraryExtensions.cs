@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Xml.Linq;
@@ -65,6 +66,31 @@ namespace Ubiquity.NET.Versioning.Build.Tasks.UT.Support
                                  .Property( "Nullable", "disable" )
                                  .Property( "ManagePackageVersionsCentrally", "false" )
                                  .Property( "ImplicitUsings", "disable" );
+        }
+
+        [SuppressMessage( "Style", "IDE0060:Remove unused parameter", Justification = "Syntactical sugar" )]
+        public static ProjectCreator VcxProj(
+            this ProjectCreatorTemplates templates,
+            ProjectCollection projectCollection
+        )
+        {
+            return ProjectCreator.Create(path: null, defaultTargets: "Build", projectCollection: projectCollection)
+                                 .ItemGroup(label: "ProjectConfigurations")
+                                 .ProjectConfiguration("Debug", "Win32")
+                                 .ProjectConfiguration("Release", "Win32")
+                                 .ProjectConfiguration("Debug", "x64")
+                                 .ProjectConfiguration("Release", "x64");
+        }
+
+        public static ProjectCreator ProjectConfiguration(this ProjectCreator self, string configuration, string platform)
+        {
+            var metaData = new Dictionary<string, string?>
+            {
+                ["Configuration"]=configuration,
+                ["Platform"]=platform
+            };
+            self.ItemInclude("ProjectConfiguration", $"{configuration}|{platform}", metadata: metaData);
+            return self;
         }
 
         private static XElement GetOrCreateSourceMappingElement( XElement configuration )
